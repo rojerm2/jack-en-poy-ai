@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.2 — ML prediction module
+
+- Existing React game, Spring Boot API and CSV collection.
+- Session-aware windows, chronological decision-tree training, atomic artifact serialization.
+- Validated model loading, last-three-move prediction, class probabilities and model metadata.
+- Root documentation and ignored local runtime files.
+
+Validation: 13 Python tests pass; prediction CLI verified against the locally trained legacy model. Backend baseline: 10 tests pass. Frontend build/lint pass.
+
 ## 4.1 — First ML model
 
 - React game and Spring Boot API with CSV recording.

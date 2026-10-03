@@ -1,5 +1,5 @@
 # Remaining work
 
-Next: 4.2 — ML prediction module
+Next: 5.1 — Python prediction service
 
-Completed through 4.1 — First ML model.
+Completed through 4.2 — ML prediction module.

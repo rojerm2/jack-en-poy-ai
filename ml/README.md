@@ -19,3 +19,10 @@ three-window gap. Evaluation rows are never fitted. Only load locally created Jo
 The checked-in CSV is a small legacy example from one player. Its score is not evidence
 of general prediction quality. Uniform random prediction has expected accuracy 1/3.
 Synthetic sequences appear only in tests.
+
+## Local prediction
+
+`python predict.py ROCK PAPER SCISSORS` uses the last three completed moves, oldest first.
+The result includes the predicted move, class probabilities, model name and version.
+Confidence is an uncalibrated classifier probability, not a promised success rate.
+Missing or incompatible artifacts require retraining.

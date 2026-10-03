@@ -1,16 +1,16 @@
 # Project context
 
 Jack-En-Poy AI is a React/TypeScript game, Spring Boot API, and Python move predictor.
-The current completed milestone is 4.1 — First ML model. Next: 4.2 — ML prediction module.
+The current completed milestone is 4.2 — ML prediction module. Next: 5.1 — Python prediction service.
 
 ## Current implementation
-- React game and Spring Boot API with CSV recording.
-- Session-aware dataset generation and serialized decision tree/one-hot encoder.
-- Chronological 114-sample training set, 26-sample holdout, three-window gap.
-- Root documentation is now tracked; Python caches and environments are ignored.
+- Existing React game, Spring Boot API and CSV collection.
+- Session-aware windows, chronological decision-tree training, atomic artifact serialization.
+- Validated model loading, last-three-move prediction, class probabilities and model metadata.
+- Root documentation and ignored local runtime files.
 
 ## Validation
-5 Python tests and 10 Maven tests passed; frontend baseline build/lint passed. Legacy holdout accuracy: 42.31%, a small single-player sample.
+13 Python tests pass; prediction CLI verified against the locally trained legacy model. Backend baseline: 10 tests pass. Frontend build/lint pass.
 
 ## Working conventions
 - Canonical documentation lives at the repository root and is tracked by Git.
