@@ -20,7 +20,7 @@ class ModelManager:
         with self.lock:
             try:
                 stat = self.path.stat()
-                signature = (stat.st_mtime_ns, stat.st_size)
+                signature = (stat.st_mtime_ns, stat.st_size, stat.st_ino)
             except OSError:
                 signature = None
             if signature != self.signature:

@@ -1,21 +1,38 @@
 # Project context
 
-Jack-En-Poy AI is a React/TypeScript game, Spring Boot API, and Python move predictor.
-The current completed milestone is 7.3 — AI performance analytics. Next: 8 — Portfolio release and final v1.0.0 validation.
+Jack-En-Poy AI v1.0.0 is a React/TypeScript game, Spring Boot API, and Python move predictor.
+All planned milestones 4.1 through 8 are complete. TODO.md contains future improvements.
 
 ## Current implementation
-- Full first-person game, session/keyboard controls and reveal gating.
-- Backend-authoritative scores and per-session prediction accuracy, strategy win rates and move distribution.
-- Read-only analytics endpoint and accessible frontend statistics panel with explicit denominators.
-- Persistent CSV reports group model/version metrics, confusion matrices, confidence buckets and fallback reasons.
-- Snapshot retraining/rollback/reload and chronological comparison of two baselines and five classifiers.
+- First-person SVG hands, three-beat animation, delayed result/score reveal, keyboard controls and session reset.
+- Backend-owned completed history, ML counter strategy, bounded inference timeout and random fallback.
+- Server-authoritative scores, session analytics and persistent CSV metadata; read-only analytics endpoint.
+- Session-aware datasets, serialized preprocessing/model, typed prediction service and validated model reload.
+- Snapshot retraining, model archives/rollback, chronological comparison of two baselines and five classifiers.
+- Frontend/backend/service version 1.0.0, pinned Python dependencies, GitHub Actions and isolated cross-process smoke test.
 
-## Validation
-33 Python tests, 11 frontend tests, frontend build/lint and 23 backend tests pass; the added analytics endpoint test also passes (24 total backend tests for final validation). Live CSV analytics CLI verified.
+## Final validation
+Clean dependency installation and checks passed using Java 21, Node 24 and Python 3.12.
+33 Python tests, 24 backend tests and 11 frontend tests pass. Type checking, lint, production
+build, Maven clean verify and pip check pass; npm audit reports zero vulnerabilities.
+Dataset generation, training, serialization, prediction, comparison, retraining and analytics CLIs pass.
+The actual packaged Java/Python smoke test verifies offline random play, online ML counters from
+completed history, service-failure fallback, authoritative scores and persistent CSV analytics.
+The production browser preview verifies reveal/input locking, scores, fourth-round inference,
+statistics and new-session reset. Remote CI status is separate from these local checks.
+
+## Evaluation and limits
+The checked-in 146-round legacy sample selects logistic regression using training-only chronological
+folds. Holdout accuracy is 42.31% over 26 rows; this small reused sample does not establish general
+improvement over random play. Confidence is uncalibrated and strategy rates are observational.
+One backend instance keeps up to 1000 ephemeral sessions and serializes play. Restart/eviction loses
+session state. A lost response can represent a recorded round; the next response resynchronizes scores.
+The model is global. No authentication, shared database or public deployment is configured.
 
 ## Working conventions
 - Canonical documentation lives at the repository root and is tracked by Git.
-- Java 21, Node 24, Python 3.12; use the Maven wrapper and the frontend lockfile.
-- Predict using only the player's previous completed rounds; never send the current move to inference.
-- Local game history and generated model/report files are ignored. The checked-in legacy history is sample data.
-- Changes should be validated, documented, committed, and normally pushed by milestone.
+- Use Java 21, Node 24 and Python 3.12, the Maven wrapper and dependency lockfiles.
+- Predict only from previous completed rounds; never send the current move to inference.
+- Keep live history, generated models/reports, environments and build outputs out of Git.
+- Validate, document, review and commit logical changes; use normal non-destructive pushes.
+- Follow README.md for reproducible setup and TODO.md for future work.

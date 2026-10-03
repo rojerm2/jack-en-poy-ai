@@ -1,11 +1,11 @@
 # Move prediction
 
-Use Python 3.12 or later. From `ml/`:
+Use Python 3.12 (tested). From `ml/`:
 
 ```sh
 python -m venv .venv
 # Windows: .venv\Scripts\activate; Linux/macOS: source .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-lock.txt
 python -m src.dataset.main
 python train.py
 python -m pytest

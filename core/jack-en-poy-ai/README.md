@@ -23,6 +23,6 @@ This is a single-instance portfolio app. Sessions are in memory, with a 1000-ses
 LRU bound. Restarting the API or eviction loses that session's inference history.
 Requests are serialized to keep prediction, recording and history updates in order.
 
-GAME_ALLOWED_ORIGINS is a comma-separated list; defaults allow localhost:5173 and 127.0.0.1:5173. Configure explicit deployed origins when hosting separately.
+GAME_ALLOWED_ORIGINS is a comma-separated list; defaults allow localhost/127.0.0.1 on ports 5173 (dev) and 4173 (preview). Configure explicit deployed origins when hosting separately.
 
 Each play response includes server-authoritative session scores and analytics. `GET /api/game/analytics?sessionId=<UUID>` reads the same snapshot without playing a round. Rates are null when no relevant rounds exist. In-memory analytics are lost on restart/eviction; persistent offline analytics use the CSV.

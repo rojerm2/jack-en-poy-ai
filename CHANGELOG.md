@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.0 — 2026-10-03
+
+- Completed milestones 4.1–8: model training/prediction, Python service, backend ML integration,
+  first-person animation, gameplay polish, retraining/rollback, model comparison and analytics.
+- Added a cross-process integration smoke test and GitHub Actions validation.
+- Pinned Python dependencies, validated clean installs/builds, and documented local setup and limits.
+- Aligned frontend, backend and service versions at 1.0.0.
+- Final validation: 33 Python, 24 backend and 11 frontend tests; builds/lint/type checking,
+  zero npm audit findings, real-service smoke test and production browser gameplay passed.
+
+
 ## 7.3 — AI performance analytics
 
 - Full first-person game, session/keyboard controls and reveal gating.
@@ -83,78 +94,15 @@ Validation: 13 Python tests pass; prediction CLI verified against the locally tr
 
 Validation: 5 Python tests and 10 Maven tests passed; frontend baseline build/lint passed. Legacy holdout accuracy: 42.31%, a small single-player sample.
 
+
 ## v0.3.0
 
-### Added
-
-- Python Machine Learning project
-- ML project folder structure
-- requirements.txt
-- Dataset Generator
-- Sliding Window algorithm
-- Processed training dataset generation
-- Dataset validation pipeline
-
-### Changed
-
-- Separated raw gameplay history from ML training data.
-- Introduced feature engineering stage before model training.
-
----
+- Added raw CSV history, sliding-window dataset generation and the Python module.
 
 ## v0.2.0
 
-- React frontend
-- Backend integration
-
----
+- Added React/TypeScript gameplay, backend integration, scoreboard and loading/error states.
 
 ## v0.1.0
 
-- Spring Boot backend
-
-# Changelog
-
-## v0.2.0
-
-### Added
-
-- React frontend
-- TypeScript models
-- Tailwind CSS
-- Axios integration
-- Home page
-- Header component
-- Footer component
-- ScoreBoard component
-- ResultCard component
-- MoveButton component
-- Dynamic game state
-- Live scoreboard
-- Loading indicator
-- Error handling
-
-### Changed
-
-- Connected frontend to Spring Boot backend
-- HomePage now manages application state
-- Components receive data through props
-
-### Fixed
-
-- N/A
-
----
-
-## v0.1.0
-
-### Added
-
-- Spring Boot backend
-- REST API
-- DTOs
-- Validation
-- Exception handling
-- Winner evaluator
-- Random move generator
-- Unit tests
+- Added Spring Boot game API, move/result domain types, random strategy and game-rule tests.

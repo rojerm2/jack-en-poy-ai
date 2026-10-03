@@ -10,9 +10,9 @@
     </parent>
     <groupId>com.orcific</groupId>
     <artifactId>jack-en-poy-ai</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>jack-en-poy</name>
-    <description>jack-en-poy</description>
+    <version>1.0.0</version>
+    <name>Jack-En-Poy AI</name>
+    <description>Rock-Paper-Scissors with historical move prediction and random fallback</description>
     <url/>
     <licenses>
         <license/>
