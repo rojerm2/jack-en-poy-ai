@@ -1,6 +1,15 @@
 node_modules/
 venv/
+.venv/
 .env
 .DS_Store
 *.log
 internal_docs/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+ml/models/*.joblib
+ml/reports/
+ml/data/raw/live-history.csv
+ml/data/processed/*.csv
+!ml/data/processed/training-data.csv

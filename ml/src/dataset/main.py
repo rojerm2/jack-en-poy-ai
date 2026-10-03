@@ -1,8 +1,20 @@
+import argparse
 from pathlib import Path
+import sys
 
-from dataset_generator import generate_dataset
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from src.dataset.dataset_generator import generate_dataset
 
-RAW_DATA = Path("../../data/raw/game-history.csv")
-OUTPUT_DATA = Path("../../data/processed/training-data.csv")
 
-generate_dataset(RAW_DATA, OUTPUT_DATA)
+def main():
+    parser = argparse.ArgumentParser(description="Generate three-move training windows")
+    parser.add_argument("--input", type=Path, default=ROOT / "data/raw/game-history.csv")
+    parser.add_argument("--output", type=Path, default=ROOT / "data/processed/training-data.csv")
+    args = parser.parse_args()
+    dataset = generate_dataset(args.input, args.output)
+    print(f"Generated {len(dataset)} training samples: {args.output}")
+
+
+if __name__ == "__main__":
+    main()
