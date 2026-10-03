@@ -1,5 +1,15 @@
 # Changelog
 
+## 7.3 — AI performance analytics
+
+- Full first-person game, session/keyboard controls and reveal gating.
+- Backend-authoritative scores and per-session prediction accuracy, strategy win rates and move distribution.
+- Read-only analytics endpoint and accessible frontend statistics panel with explicit denominators.
+- Persistent CSV reports group model/version metrics, confusion matrices, confidence buckets and fallback reasons.
+- Snapshot retraining/rollback/reload and chronological comparison of two baselines and five classifiers.
+
+Validation: 33 Python tests, 11 frontend tests, frontend build/lint and 23 backend tests pass; the added analytics endpoint test also passes (24 total backend tests for final validation). Live CSV analytics CLI verified.
+
 ## 7.2 — Model comparison
 
 - Full animated React game and backend-owned session inference with random fallback.

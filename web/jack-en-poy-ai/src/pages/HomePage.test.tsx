@@ -7,7 +7,7 @@ import type { GameResult, PlayResponse } from '../types/game';
 vi.mock('../services/gameService', () => ({ playGame: vi.fn(), startNewGame: vi.fn() }));
 
 function response(result: GameResult = 'PLAYER_WIN'): PlayResponse {
-    return { success: true, message: 'done', data: { playerMove: 'ROCK', computerMove: 'SCISSORS', result, sessionId: 'a', round: 1, prediction: { strategy: 'RANDOM', predictedMove: null, confidence: null, modelName: null, modelVersion: null, fallbackReason: 'insufficient_history' } } };
+    return { success: true, message: 'done', data: { playerMove: 'ROCK', computerMove: 'SCISSORS', result, sessionId: 'a', round: 1, analytics: { totalRounds: 1, playerWins: Number(result === 'PLAYER_WIN'), computerWins: Number(result === 'COMPUTER_WIN'), draws: Number(result === 'DRAW'), mlRounds: 0, randomRounds: 1, predictionsCorrect: 0, predictionAccuracy: null, mlWinRate: null, randomWinRate: Number(result === 'COMPUTER_WIN'), averageConfidence: null, moveCounts: { ROCK: 1, PAPER: 0, SCISSORS: 0 } }, prediction: { strategy: 'RANDOM', predictedMove: null, confidence: null, modelName: null, modelVersion: null, fallbackReason: 'insufficient_history' } } };
 }
 
 describe('round animation', () => {
@@ -95,4 +95,18 @@ describe('gameplay controls', () => {
         await act(async () => { await vi.advanceTimersByTimeAsync(1350); });
         expect(screen.getByText(/80% model confidence/)).toBeInTheDocument();
     });
+});
+
+it('uses authoritative backend scores when a previous response was missed', async () => {
+    vi.useFakeTimers();
+    const game = response();
+    game.data.round = 2;
+    game.data.analytics.totalRounds = 2;
+    game.data.analytics.playerWins = 2;
+    vi.mocked(playGame).mockResolvedValue(game);
+    render(<HomePage />);
+    fireEvent.click(screen.getByRole('button', { name: 'Play rock' }));
+    await act(async () => { await vi.advanceTimersByTimeAsync(1350); });
+    expect(screen.getByTestId('player-score')).toHaveTextContent('2');
+    vi.useRealTimers();
 });

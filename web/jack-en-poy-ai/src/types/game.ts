@@ -10,6 +10,21 @@ export interface PredictionMetadata {
     fallbackReason: string | null;
 }
 
+export interface SessionAnalytics {
+    totalRounds: number;
+    playerWins: number;
+    computerWins: number;
+    draws: number;
+    mlRounds: number;
+    randomRounds: number;
+    predictionsCorrect: number;
+    predictionAccuracy: number | null;
+    mlWinRate: number | null;
+    randomWinRate: number | null;
+    averageConfidence: number | null;
+    moveCounts: Record<Move, number>;
+}
+
 export interface GameRound {
     playerMove: Move;
     computerMove: Move;
@@ -17,6 +32,7 @@ export interface GameRound {
     sessionId: string;
     round: number;
     prediction: PredictionMetadata;
+    analytics: SessionAnalytics;
 }
 
 export interface PlayResponse {

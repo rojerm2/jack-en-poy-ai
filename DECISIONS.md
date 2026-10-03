@@ -72,3 +72,7 @@ Freeze history for reproducibility, validate a candidate before promotion, archi
 
 ## ADR-016: select models within training data
 Use three expanding chronological folds with a three-window gap inside the training 80%. Fix the selected model before evaluating the final holdout. Compare two baselines and five classifiers, with deterministic ties favoring simpler earlier candidates. Comparison alone writes a report; promotion requires the retraining workflow.
+
+
+## ADR-017: distinguish prediction accuracy from game outcomes
+Keep warmup/fallback rounds outside prediction accuracy denominators. Expose observed win rates by strategy with sample counts and null rates for empty groups. Backend snapshots own scores; persist prediction/model metadata for offline analysis. Observational strategy rates are not a controlled comparison.

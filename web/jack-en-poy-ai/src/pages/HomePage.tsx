@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import ScoreBoard from '../components/ScoreBoard';
 import RoundArena from '../components/RoundArena';
 import ResultCard from '../components/ResultCard';
+import PerformancePanel from '../components/PerformancePanel';
 import RoundHistory from '../components/RoundHistory';
 import MoveButton from '../components/MoveButton';
 import Footer from '../components/Footer';
@@ -32,11 +33,7 @@ export default function HomePage() {
             if (controller.signal.aborted) return;
             setGame(response.data);
             setHistory(previous => [response.data, ...previous].slice(0, 6));
-            setScore(previous => ({
-                player: previous.player + Number(response.data.result === 'PLAYER_WIN'),
-                computer: previous.computer + Number(response.data.result === 'COMPUTER_WIN'),
-                draw: previous.draw + Number(response.data.result === 'DRAW'),
-            }));
+            setScore({ player: response.data.analytics.playerWins, computer: response.data.analytics.computerWins, draw: response.data.analytics.draws });
         } catch (error) {
             if (!controller.signal.aborted) console.warn('Round failed:', error instanceof Error ? error.message : 'Unknown request error');
             if (!controller.signal.aborted) setError('Unable to play this round. Check that the game API is running and try again.');
@@ -82,6 +79,7 @@ export default function HomePage() {
             <p className="keyboard-hint">Or use <kbd>R</kbd>, <kbd>P</kbd>, <kbd>S</kbd> on your keyboard.</p>
             {!loading && <ResultCard game={game} />}
             {error && <p className="error-message" role="alert">{error}</p>}
+            <PerformancePanel analytics={loading ? null : game?.analytics ?? null} />
             <RoundHistory rounds={history} />
             <Footer />
         </main>

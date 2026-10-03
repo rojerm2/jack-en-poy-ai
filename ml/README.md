@@ -79,3 +79,7 @@ Comparison requires at least 64 windows. `compare.py` writes a report and does n
 a model. `retrain.py --compare` uses the same comparison to validate/archive/promote the
 selected candidate through the retraining workflow. All scores are specific to the supplied
 history; repeated comparison of a small reused holdout is not an independent experiment.
+
+## Observed performance
+
+`python analytics.py` reports live CSV result counts, strategy win rates, prediction accuracy, move distribution, confidence buckets, confusion matrix and per-model/version metrics. Use `--history data/raw/game-history.csv` for legacy data (no prediction metrics). Empty prediction groups produce null rates. These are observational measurements, not evidence that ML causes higher win rates.
