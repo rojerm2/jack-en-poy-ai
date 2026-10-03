@@ -56,3 +56,7 @@ Keep the last 20% as a chronological holdout with a three-window gap. Fit the en
 
 ## ADR-012: independent local prediction service
 Serve inference through FastAPI on loopback port 8001. Require exactly three completed moves and forbid extra fields. Missing models return 503 so the game can use random play. Model artifacts are loaded locally rather than accepted over HTTP.
+
+
+## ADR-013: backend-owned session history and bounded fallback
+Use server history rather than client-provided history. Resolve inference before persisting the current move. Limit inference to 600 ms and use random fallback. Serialize play operations to preserve round ordering and keep local live history separate from checked-in samples. Session state is ephemeral and limited to 1000 entries.

@@ -21,7 +21,7 @@ public class GameController {
     @PostMapping("/play")
     public ApiResponse<PlayResponse> play(@Valid @RequestBody PlayRequest playRequest){
         return ApiResponse.success(
-                gameService.play(playRequest.playerMove())
+                gameService.play(playRequest.playerMove(), playRequest.sessionId())
         );
     }
 }

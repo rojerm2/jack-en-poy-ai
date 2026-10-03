@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.2 — Spring Boot ML integration
+
+- FastAPI predictor and chronological/session-aware training pipeline.
+- Server-owned session history, ML counter strategy, bounded inference timeout and random fallback.
+- Validated game requests, separate live CSV with prediction metadata and sequential round numbers.
+- Browser session ID propagation; storage errors do not advance completed history.
+
+Validation: 20 Maven tests pass, covering history isolation/no current-move leakage, timeout/unavailable/invalid inference, CSV and HTTP validation. Frontend build/lint pass. Python suite: 21 passed.
+
 ## 5.1 — Python prediction service
 
 - React game and Spring Boot CSV collection.
