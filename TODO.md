@@ -1,5 +1,5 @@
 # Remaining work
 
-Next: 6.2 — Gameplay/UI polish
+Next: 7.1 — Retraining workflow
 
-Completed through 6.1 — First-person Jack-En-Poy animation.
+Completed through 6.2 — Gameplay/UI polish.

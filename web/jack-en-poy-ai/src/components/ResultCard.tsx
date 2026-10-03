@@ -1,21 +1,15 @@
-import type { GameResult, Move } from '../types/game';
+import type { GameRound } from '../types/game';
 
-interface Props {
-    playerMove: Move | null;
-    computerMove: Move | null;
-    result: GameResult | null;
-}
+interface Props { game: GameRound | null; }
 
-export default function ResultCard({ playerMove, computerMove, result }: Props) {
-    return (
-        <div className="mt-8 rounded-xl bg-white p-6 shadow">
-            <h2 className="mb-4 text-xl font-semibold">Last Round</h2>
-
-            <p>Player : {playerMove ?? '-'}</p>
-
-            <p>Computer : {computerMove ?? '-'}</p>
-
-            <p>Result : {result ?? 'Waiting...'}</p>
+export default function ResultCard({ game }: Props) {
+    const prediction = game?.prediction;
+    return <section className="strategy-card" aria-label="Computer strategy">
+        <span className={`strategy-dot ${prediction?.strategy === 'ML' ? 'strategy-ml' : ''}`} aria-hidden="true" />
+        <div><strong>{prediction?.strategy === 'ML' ? 'Playing your pattern' : 'Random play'}</strong>
+            <p>{prediction?.strategy === 'ML' ? `Predicted ${prediction.predictedMove?.toLowerCase()} · ${Math.round((prediction.confidence ?? 0) * 100)}% model confidence` :
+                !game || prediction?.fallbackReason === 'insufficient_history' ? 'Three completed moves give the model a starting point.' : 'Prediction is unavailable. The game keeps going.'}</p>
+            {prediction?.strategy === 'ML' && <small>Classifier confidence is not a guaranteed win rate.</small>}
         </div>
-    );
+    </section>;
 }

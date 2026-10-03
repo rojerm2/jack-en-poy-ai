@@ -1,5 +1,15 @@
 # Changelog
 
+## 6.2 — Gameplay/UI polish
+
+- Full ML counter strategy with random fallback and server-owned history.
+- First-person animated table with reveal gating and reduced-motion support.
+- Keyboard R/P/S controls, new-session reset, six-round history and post-reveal prediction details.
+- Configurable API URL, request timeout, local proxy and configurable CORS origins.
+- Frontend dependency audit findings resolved with compatible updates.
+
+Validation: 8 frontend tests, TypeScript build and lint pass. 21 Maven tests pass, including local CORS preflight. Real browser round/reveal/score/history and real Python inference verified. npm audit: 0 reported vulnerabilities.
+
 ## 6.1 — First-person Jack-En-Poy animation
 
 - Chronological/session-aware ML pipeline, FastAPI service and backend counter strategy with fallback.

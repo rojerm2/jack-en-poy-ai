@@ -9,3 +9,7 @@ export async function playGame(move: Move, signal?: AbortSignal): Promise<PlayRe
     sessionId = response.data.data.sessionId;
     return response.data;
 }
+
+export function startNewGame(): void {
+    sessionId = crypto.randomUUID();
+}

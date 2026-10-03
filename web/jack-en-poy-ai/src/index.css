@@ -47,3 +47,23 @@ button:disabled { cursor: wait; opacity: .55; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 @media (max-width: 520px) { .game-shell { padding: 25px 16px; } .scoreboard { gap: 20px; } .scoreboard div { gap: 8px; } .scoreboard strong { font-size: 25px; } .scoreboard span { font-size: 8px; } .arena { height: 355px; } .opponent-arm { left: 2%; width: 140px; } .player-arm { right: 2%; width: 155px; } .move-controls { gap: 8px; } .move-button { flex-direction: column; gap: 3px; font-size: 12px; } .arena-message h2 { font-size: 21px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .chant span { position: static; opacity: 1; margin: 0 4px; } }
+
+.session-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 10px; letter-spacing: .1em; color: #68748a; }
+.session-toolbar button { font-size: 11px; padding: 6px 11px; border: 1px solid #d9dfe9; background: transparent; border-radius: 7px; color: #26334d; letter-spacing: 0; }
+.keyboard-hint { text-align: center; font-size: 11px; color: #68748a; margin-top: 14px; }
+kbd { font-size: 10px; border: 1px solid #d9dfe9; border-radius: 3px; padding: 1px 4px; background: white; }
+.strategy-card { display: flex; gap: 12px; padding: 16px 18px; border: 1px solid #e3e3dc; border-radius: 12px; margin-top: 22px; background: #ffffff80; }
+.strategy-card strong { font-size: 12px; }
+.strategy-card p { font-size: 12px; color: #68748a; margin: 4px 0 0; }
+.strategy-card small { font-size: 10px; color: #68748a; }
+.strategy-dot { flex: 0 0 7px; width: 7px; height: 7px; border-radius: 50%; background: #8793a7; margin-top: 7px; }
+.strategy-ml { background: #4267d5; }
+.round-history { margin-top: 28px; }
+.round-history h2 { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+.history-scroll { overflow-x: auto; }
+.round-history table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+.round-history th { font-weight: 500; color: #68748a; padding: 8px 10px; }
+.round-history td { padding: 10px; border-top: 1px solid #e3e3dc; }
+.outcome-player_win { color: #4267d5; }
+.outcome-computer_win { color: #bc573f; }
+.outcome-draw { color: #68748a; }
