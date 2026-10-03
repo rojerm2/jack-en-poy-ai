@@ -6,6 +6,9 @@ All planned milestones 4.1 through 8 are complete. TODO.md contains future impro
 ## Current implementation
 - First-person SVG hands, three-beat animation, delayed result/score reveal, keyboard controls and session reset.
 - Backend-owned completed history, ML counter strategy, bounded inference timeout and random fallback.
+- Repetition correction after v1.0.0: three identical completed moves override available ML inference
+  with an explicit ADAPTIVE counter. Separate UI/CSV/session statistics avoid reporting it as ML.
+  Mixed windows use ML; unavailable/disabled inference remains random. The current move is never used.
 - Server-authoritative scores, session analytics and persistent CSV metadata; read-only analytics endpoint.
 - Session-aware datasets, serialized preprocessing/model, typed prediction service and validated model reload.
 - Snapshot retraining, model archives/rollback, chronological comparison of two baselines and five classifiers.
@@ -13,11 +16,12 @@ All planned milestones 4.1 through 8 are complete. TODO.md contains future impro
 
 ## Final validation
 Clean dependency installation and checks passed using Java 21, Node 24 and Python 3.12.
-33 Python tests, 24 backend tests and 11 frontend tests pass. Type checking, lint, production
+35 Python tests, 27 backend tests and 13 frontend tests pass after the repetition correction. Type checking, lint, production
 build, Maven clean verify and pip check pass; npm audit reports zero vulnerabilities.
 Dataset generation, training, serialization, prediction, comparison, retraining and analytics CLIs pass.
 The actual packaged Java/Python smoke test verifies offline random play, online ML counters from
-completed history, service-failure fallback, authoritative scores and persistent CSV analytics.
+completed history, all three repeated-move counters, service-failure fallback, authoritative scores
+and persistent CSV analytics. A regression test reproduced the scissors loop before the correction.
 The production browser preview verifies reveal/input locking, scores, fourth-round inference,
 statistics and new-session reset. Remote CI status is separate from these local checks.
 

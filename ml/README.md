@@ -83,3 +83,8 @@ history; repeated comparison of a small reused holdout is not an independent exp
 ## Observed performance
 
 `python analytics.py` reports live CSV result counts, strategy win rates, prediction accuracy, move distribution, confidence buckets, confusion matrix and per-model/version metrics. Use `--history data/raw/game-history.csv` for legacy data (no prediction metrics). Empty prediction groups produce null rates. These are observational measurements, not evidence that ML causes higher win rates.
+
+
+CSV analytics accepts backend `ADAPTIVE` repetition rounds and reports their sample count/accuracy
+separately from ML predictions, confidence buckets and model-version metrics. The trained predictor
+is unchanged; the backend repetition rule uses only completed session moves when inference is ready.

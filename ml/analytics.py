@@ -19,8 +19,11 @@ def summarize(history):
         raise ValueError("Invalid round result")
     if "strategy" not in data:
         data["strategy"] = "LEGACY"
-    if not data["strategy"].isin(["ML", "RANDOM", "LEGACY"]).all():
+    if not data["strategy"].isin(["ML", "RANDOM", "ADAPTIVE", "LEGACY"]).all():
         raise ValueError("Invalid strategy")
+    adaptive = data[data["strategy"] == "ADAPTIVE"]
+    if len(adaptive) and ("predictedMove" not in adaptive or not adaptive["predictedMove"].isin(MOVES).all()):
+        raise ValueError("Adaptive rounds require a valid predicted move")
     ml = data[data["strategy"] == "ML"].copy()
     if len(ml) and (not {"predictedMove", "confidence", "modelName", "modelVersion"}.issubset(ml.columns) or not ml["predictedMove"].isin(MOVES).all()):
         raise ValueError("ML rounds require prediction metadata")
@@ -45,6 +48,8 @@ def summarize(history):
         "results": {name: int((data["result"] == name).sum()) for name in ["PLAYER_WIN", "COMPUTER_WIN", "DRAW"]},
         "moveCounts": {move: int((data["playerMove"] == move).sum()) for move in MOVES},
         "strategies": strategies,
+        "adaptivePredictions": len(adaptive),
+        "adaptivePredictionAccuracy": float((adaptive["predictedMove"] == adaptive["playerMove"]).mean()) if len(adaptive) else None,
         "mlPredictions": len(ml),
         "predictionAccuracy": float((ml["predictedMove"] == ml["playerMove"]).mean()) if len(ml) else None,
         "labels": list(MOVES),

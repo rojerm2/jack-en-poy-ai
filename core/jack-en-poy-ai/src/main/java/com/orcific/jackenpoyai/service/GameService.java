@@ -2,6 +2,7 @@ package com.orcific.jackenpoyai.service;
 
 import com.orcific.jackenpoyai.dto.GameRecord;
 import com.orcific.jackenpoyai.dto.PlayResponse;
+import com.orcific.jackenpoyai.dto.PredictionMetadata;
 import com.orcific.jackenpoyai.dto.SessionAnalytics;
 import com.orcific.jackenpoyai.enums.Move;
 import com.orcific.jackenpoyai.util.MoveGenerator;
@@ -39,6 +40,11 @@ public class GameService {
 
         // Choose the strategy before adding this round's move to completed history.
         var prediction = predictor.predict(List.copyOf(session.history));
+        // A fixed offline model can otherwise repeat the same wrong counter indefinitely.
+        if ("ML".equals(prediction.strategy()) && session.history.size() == 3
+                && session.history.stream().allMatch(move -> move == session.history.getFirst())) {
+            prediction = PredictionMetadata.repetition(session.history.getFirst());
+        }
         var computerMove = prediction.predictedMove() == null ? MoveGenerator.randomMove() : counter(prediction.predictedMove());
         var result = WinnerEvaluator.evaluate(playerMove, computerMove);
         var round = session.round + 1;

@@ -76,3 +76,12 @@ Use three expanding chronological folds with a three-window gap inside the train
 
 ## ADR-017: distinguish prediction accuracy from game outcomes
 Keep warmup/fallback rounds outside prediction accuracy denominators. Expose observed win rates by strategy with sample counts and null rates for empty groups. Backend snapshots own scores; persist prediction/model metadata for offline analysis. Observational strategy rates are not a controlled comparison.
+
+
+## ADR-018: keep repeated-move adaptation separate from offline ML
+When inference is available, override it if the last three completed player moves are identical.
+Predict that repeated move and counter it without reading the current move. A fixed offline model
+can otherwise repeat the same wrong prediction forever. Record this heuristic as ADAPTIVE with no
+classifier confidence or model identity, and count its rounds separately from ML and random play.
+Mixed histories retain ML; warmup, disabled inference and service failures retain random fallback.
+This rule assumes repetition continues, so changing moves can beat it. It is not online model training.

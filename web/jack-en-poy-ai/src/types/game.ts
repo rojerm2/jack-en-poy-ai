@@ -2,7 +2,7 @@ export type Move = 'ROCK' | 'PAPER' | 'SCISSORS';
 export type GameResult = 'PLAYER_WIN' | 'COMPUTER_WIN' | 'DRAW';
 
 export interface PredictionMetadata {
-    strategy: 'ML' | 'RANDOM';
+    strategy: 'ML' | 'RANDOM' | 'ADAPTIVE';
     predictedMove: Move | null;
     confidence: number | null;
     modelName: string | null;
@@ -17,6 +17,8 @@ export interface SessionAnalytics {
     draws: number;
     mlRounds: number;
     randomRounds: number;
+    adaptiveRounds: number;
+    adaptiveWinRate: number | null;
     predictionsCorrect: number;
     predictionAccuracy: number | null;
     mlWinRate: number | null;

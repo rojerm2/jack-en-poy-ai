@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Fixed indefinite wrong counters when an offline model mispredicts repeated player moves.
+  Three identical completed moves now use an explicit repetition strategy when ML is available.
+- Added ADAPTIVE metadata, separate session/CSV analytics, and an accurate UI explanation.
+- Regression coverage verifies all three moves, session isolation, changed-current-move behavior,
+  unavailable-service fallback, reveal gating and separate statistics.
+- Validation: 27 backend, 35 Python and 13 frontend tests; build/type checking/lint and the real-service
+  smoke test pass, including six repetition counters across rock, paper and scissors.
+
 ## v1.0.0 — 2026-10-03
 
 - Completed milestones 4.1–8: model training/prediction, Python service, backend ML integration,

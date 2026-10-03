@@ -2,7 +2,9 @@
 
 Rock-Paper-Scissors built with React, Spring Boot, and a scikit-learn prediction service.
 The computer uses your previous three completed moves to predict the next move and
-counters that prediction. It uses random play during warmup or when inference is unavailable.
+counters that prediction. When your last three completed moves are identical, a repetition
+rule overrides the offline model and counters that repeated move. It uses random play during
+warmup or when inference is unavailable.
 
 Version **1.0.0**.
 
@@ -10,7 +12,7 @@ Version **1.0.0**.
 
 - First-person SVG hands, a Jack-En-Poy chant, and results revealed after the animation.
 - Keyboard controls, session scores, recent rounds, and reduced-motion support.
-- Server-owned player history, bounded HTTP inference, and random fallback.
+- Server-owned player history, repetition counters, bounded HTTP inference, and random fallback.
 - Session-aware CSV collection, reproducible datasets, model comparison and retraining.
 - Prediction accuracy, win rates by strategy, move distribution, and offline model/version reports.
 
@@ -75,7 +77,10 @@ the Windows Python environment and wrapper commands. Other commands are the same
 
 Omit sessionId to start a server-generated session and reuse the returned ID. The response
 wraps `success`, `message`, and `data`. Data includes moves, result, session ID, round number,
-prediction metadata, and an authoritative analytics/score snapshot. Invalid moves or sessions
+prediction metadata, and an authoritative analytics/score snapshot. Strategy is `ML`, `ADAPTIVE`
+(three identical completed moves), or `RANDOM`. Adaptive rounds have a predicted move but no
+classifier confidence/model metadata; `adaptiveRounds` and `adaptiveWinRate` are separate from
+ML accuracy and random-play statistics. Invalid moves or sessions
 return 400. History-storage failure returns 503 and does not advance completed history.
 
 `GET /api/game/analytics?sessionId=<UUID>` reads session statistics without playing.
@@ -134,7 +139,9 @@ Three chronological folds within training data select the model; the holdout is 
 On the checked-in 146-round legacy sample, selection chose logistic regression, with **42.31%
 accuracy over 26 holdout rows**. Uniform random expected accuracy is 33.33%. This is a small,
 single-player reused sample, so it does not establish general improvement over random play.
-Classifier confidence is uncalibrated. Live strategy win rates describe different rounds,
+Classifier confidence is uncalibrated. The repetition rule is separate from the trained model;
+it assumes a streak continues and can be beaten by changing moves. It does not retrain the classifier
+during play, and is enabled only when ML inference is available. Live strategy win rates describe different rounds,
 not a controlled experiment. Reports in `ml/reports/` include denominators and model versions.
 
 ## Validation

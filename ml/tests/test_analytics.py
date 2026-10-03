@@ -32,3 +32,26 @@ def test_rejects_invalid_ml_metadata(tmp_path):
     pd.DataFrame([{"playerMove": "ROCK", "computerMove": "PAPER", "result": "COMPUTER_WIN", "strategy": "ML", "predictedMove": "BAD"}]).to_csv(path, index=False)
     with pytest.raises(ValueError, match="metadata"):
         summarize(path)
+
+
+def test_adaptive_rounds_have_separate_accuracy_without_classifier_confidence(tmp_path):
+    path = tmp_path / "adaptive.csv"
+    pd.DataFrame([
+        {"playerMove": "ROCK", "computerMove": "PAPER", "result": "COMPUTER_WIN", "strategy": "ADAPTIVE", "predictedMove": "ROCK"},
+        {"playerMove": "SCISSORS", "computerMove": "PAPER", "result": "PLAYER_WIN", "strategy": "ADAPTIVE", "predictedMove": "ROCK"},
+    ]).to_csv(path, index=False)
+    report = summarize(path)
+    assert report["adaptivePredictions"] == 2
+    assert report["adaptivePredictionAccuracy"] == .5
+    assert report["strategies"]["ADAPTIVE"]["computerWinRate"] == .5
+    assert report["mlPredictions"] == 0
+    assert report["predictionAccuracy"] is None
+    assert report["models"] == []
+    assert report["confidenceBuckets"] == []
+
+
+def test_rejects_invalid_adaptive_prediction(tmp_path):
+    path = tmp_path / "bad-adaptive.csv"
+    pd.DataFrame([{"playerMove": "ROCK", "computerMove": "PAPER", "result": "COMPUTER_WIN", "strategy": "ADAPTIVE", "predictedMove": "BAD"}]).to_csv(path, index=False)
+    with pytest.raises(ValueError, match="Adaptive"):
+        summarize(path)

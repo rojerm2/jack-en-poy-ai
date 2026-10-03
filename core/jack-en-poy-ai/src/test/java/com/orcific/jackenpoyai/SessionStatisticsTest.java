@@ -35,4 +35,23 @@ class SessionStatisticsTest {
         assertEquals(.7, result.averageConfidence(), 1e-9);
         assertEquals(2L, result.moveCounts().get("ROCK"));
     }
+
+    @Test
+    void repetition_is_separate_from_ml_and_random_statistics() {
+        var stats = new SessionStatistics();
+        stats.record(new GameRecord(1, Instant.now(), "s", Move.ROCK, Move.PAPER, GameResult.COMPUTER_WIN, PredictionMetadata.random("insufficient_history")));
+        stats.record(new GameRecord(2, Instant.now(), "s", Move.ROCK, Move.PAPER, GameResult.COMPUTER_WIN, new PredictionMetadata("ML", Move.ROCK, .8, "tree", "v1", null)));
+        stats.record(new GameRecord(3, Instant.now(), "s", Move.ROCK, Move.PAPER, GameResult.COMPUTER_WIN, PredictionMetadata.repetition(Move.ROCK)));
+        stats.record(new GameRecord(4, Instant.now(), "s", Move.SCISSORS, Move.PAPER, GameResult.PLAYER_WIN, PredictionMetadata.repetition(Move.ROCK)));
+        var result = stats.snapshot();
+        assertEquals(4, result.totalRounds());
+        assertEquals(1, result.mlRounds());
+        assertEquals(1, result.randomRounds());
+        assertEquals(2, result.adaptiveRounds());
+        assertEquals(.5, result.adaptiveWinRate());
+        assertEquals(1., result.predictionAccuracy());
+        assertEquals(.8, result.averageConfidence());
+        assertNull(new SessionStatistics().snapshot().adaptiveWinRate());
+    }
+
 }

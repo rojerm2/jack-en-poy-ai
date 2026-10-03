@@ -15,7 +15,7 @@ HttpMovePredictor → POST /predict {history: last 3 completed moves}
            |                                     Joblib pipeline
            |                               one-hot encoder + selected classifier
            |
-Counter predicted move, or random fallback
+Override three identical completed moves (ADAPTIVE), then counter or random fallback
            |
 WinnerEvaluator → CsvGameHistoryStore → append-only local live CSV
            |
@@ -45,6 +45,10 @@ predictors under a lock. A failed reload retains the last good model; no loaded 
 
 - The backend owns history; client requests cannot supply inference history.
 - Computer selection occurs before current-move persistence/history updates.
+- If ML is available and all three previous completed moves match, an explicit ADAPTIVE rule predicts
+  that repeated move. Mixed windows still use ML; disabled/unavailable inference remains random.
+- Adaptive round counts/win rates and CSV prediction accuracy are separate from ML accuracy/confidence.
+  The streak rule cannot see the current move and can be beaten when the player changes moves.
 - First three completed rounds, disabled inference, HTTP errors, timeouts and invalid responses use random play.
 - History I/O failure returns 503; no session history/statistics update occurs.
 - Session scores/statistics appear in play responses and a read-only GET endpoint.

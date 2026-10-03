@@ -122,6 +122,22 @@ def main():
                 assert online["analytics"]["mlRounds"] == 1
                 snapshot = client.get(api + "/api/game/analytics", params={"sessionId": online_session}).json()["data"]
                 assert snapshot == online["analytics"]
+                for move, counter in {"ROCK": "PAPER", "PAPER": "SCISSORS", "SCISSORS": "ROCK"}.items():
+                    repeated_session = str(uuid.uuid4())
+                    for index in range(5):
+                        repeated = play(client, api, repeated_session, move)
+                        if index < 3:
+                            assert repeated["prediction"]["strategy"] == "RANDOM"
+                        else:
+                            assert repeated["prediction"]["strategy"] == "ADAPTIVE"
+                            assert repeated["prediction"]["predictedMove"] == move
+                            assert repeated["prediction"]["confidence"] is None
+                            assert repeated["computerMove"] == counter
+                            assert repeated["result"] == "COMPUTER_WIN"
+                    assert repeated["analytics"]["adaptiveRounds"] == 2
+                    assert repeated["analytics"]["adaptiveWinRate"] == 1
+                    assert repeated["analytics"]["randomRounds"] == 3
+                    assert repeated["analytics"]["mlRounds"] == 0
                 stop(python)
                 failed = play(client, api, online_session, "PAPER")
                 assert failed["prediction"]["strategy"] == "RANDOM"
@@ -129,11 +145,13 @@ def main():
                 assert failed["analytics"]["randomRounds"] == 4
 
                 persisted = summarize(history)
-                assert persisted["totalRounds"] == 9
+                assert persisted["totalRounds"] == 24
                 assert persisted["mlPredictions"] == 1
+                assert persisted["adaptivePredictions"] == 6
+                assert persisted["adaptivePredictionAccuracy"] == 1
                 print(json.dumps({"status": "passed", "withoutPython": True, "withPython": True,
                                   "serviceFailureFallback": True, "completedHistoryPrediction": True,
-                                  "authoritativeScoresAndAnalytics": True, "recordedRounds": 9}, indent=2))
+                                  "authoritativeScoresAndAnalytics": True, "repeatedMovesCountered": True, "recordedRounds": 24}, indent=2))
         except Exception:
             for process in reversed(processes):
                 stop(process)

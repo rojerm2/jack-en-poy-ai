@@ -7,7 +7,7 @@ import type { GameResult, PlayResponse } from '../types/game';
 vi.mock('../services/gameService', () => ({ playGame: vi.fn(), startNewGame: vi.fn() }));
 
 function response(result: GameResult = 'PLAYER_WIN'): PlayResponse {
-    return { success: true, message: 'done', data: { playerMove: 'ROCK', computerMove: 'SCISSORS', result, sessionId: 'a', round: 1, analytics: { totalRounds: 1, playerWins: Number(result === 'PLAYER_WIN'), computerWins: Number(result === 'COMPUTER_WIN'), draws: Number(result === 'DRAW'), mlRounds: 0, randomRounds: 1, predictionsCorrect: 0, predictionAccuracy: null, mlWinRate: null, randomWinRate: Number(result === 'COMPUTER_WIN'), averageConfidence: null, moveCounts: { ROCK: 1, PAPER: 0, SCISSORS: 0 } }, prediction: { strategy: 'RANDOM', predictedMove: null, confidence: null, modelName: null, modelVersion: null, fallbackReason: 'insufficient_history' } } };
+    return { success: true, message: 'done', data: { playerMove: 'ROCK', computerMove: 'SCISSORS', result, sessionId: 'a', round: 1, analytics: { totalRounds: 1, playerWins: Number(result === 'PLAYER_WIN'), computerWins: Number(result === 'COMPUTER_WIN'), draws: Number(result === 'DRAW'), adaptiveRounds: 0, adaptiveWinRate: null, mlRounds: 0, randomRounds: 1, predictionsCorrect: 0, predictionAccuracy: null, mlWinRate: null, randomWinRate: Number(result === 'COMPUTER_WIN'), averageConfidence: null, moveCounts: { ROCK: 1, PAPER: 0, SCISSORS: 0 } }, prediction: { strategy: 'RANDOM', predictedMove: null, confidence: null, modelName: null, modelVersion: null, fallbackReason: 'insufficient_history' } } };
 }
 
 describe('round animation', () => {
@@ -108,5 +108,25 @@ it('uses authoritative backend scores when a previous response was missed', asyn
     fireEvent.click(screen.getByRole('button', { name: 'Play rock' }));
     await act(async () => { await vi.advanceTimersByTimeAsync(1350); });
     expect(screen.getByTestId('player-score')).toHaveTextContent('2');
+    vi.useRealTimers();
+});
+
+
+it('reveals repetition strategy without reporting fabricated model confidence', async () => {
+    vi.useFakeTimers();
+    const game = response('COMPUTER_WIN');
+    game.data.prediction = { strategy: 'ADAPTIVE', predictedMove: 'ROCK', confidence: null, modelName: null, modelVersion: null, fallbackReason: null };
+    game.data.analytics.randomRounds = 0;
+    game.data.analytics.adaptiveRounds = 1;
+    game.data.analytics.adaptiveWinRate = 1;
+    vi.mocked(playGame).mockResolvedValue(game);
+    render(<HomePage />);
+    fireEvent.click(screen.getByRole('button', { name: 'Play rock' }));
+    expect(screen.queryByText('Countering repeated moves')).not.toBeInTheDocument();
+    await act(async () => { await vi.advanceTimersByTimeAsync(1350); });
+    expect(screen.getByText('Countering repeated moves')).toBeInTheDocument();
+    expect(screen.getByText('Your last three moves were rock. Expecting another rock.')).toBeInTheDocument();
+    expect(screen.queryByText(/model confidence/)).not.toBeInTheDocument();
+    expect(screen.getByTestId('computer-score')).toHaveTextContent('1');
     vi.useRealTimers();
 });

@@ -26,3 +26,9 @@ Requests are serialized to keep prediction, recording and history updates in ord
 GAME_ALLOWED_ORIGINS is a comma-separated list; defaults allow localhost/127.0.0.1 on ports 5173 (dev) and 4173 (preview). Configure explicit deployed origins when hosting separately.
 
 Each play response includes server-authoritative session scores and analytics. `GET /api/game/analytics?sessionId=<UUID>` reads the same snapshot without playing a round. Rates are null when no relevant rounds exist. In-memory analytics are lost on restart/eviction; persistent offline analytics use the CSV.
+
+
+When ML is available, three identical completed moves use an explicit repetition counter (strategy
+`ADAPTIVE`). This prevents a stale model from repeatedly choosing the same losing counter. Adaptive
+rounds have no model confidence and expose `adaptiveRounds`/`adaptiveWinRate` separately. Only prior
+completed history is used; mixed windows remain ML and disabled/unavailable inference remains random.
