@@ -1,5 +1,15 @@
 # Changelog
 
+## 7.2 — Model comparison
+
+- Full animated React game and backend-owned session inference with random fallback.
+- Snapshot retraining, archiving, rollback and validated service reload.
+- Majority/frequency baselines plus tree, forest, logistic regression, KNN and Naive Bayes comparison.
+- Three expanding chronological training folds select the model before final holdout evaluation.
+- Selected-model retraining uses the same validated promotion workflow.
+
+Validation: 30 Python tests pass, including unchanged selection when final holdout labels change. Comparison and selected-model CLI promotion verified on legacy data: logistic regression selected, 42.31% on 26 holdout rows. Frontend: 8 tests/build/lint; backend: 21 tests.
+
 ## 7.1 — Retraining workflow
 
 - Animated React game with keyboard/session controls and reveal gating.

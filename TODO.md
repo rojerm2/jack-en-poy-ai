@@ -1,5 +1,5 @@
 # Remaining work
 
-Next: 7.2 — Model comparison
+Next: 7.3 — AI performance analytics
 
-Completed through 7.1 — Retraining workflow.
+Completed through 7.2 — Model comparison.

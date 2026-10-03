@@ -60,3 +60,22 @@ The service checks the file timestamp/size on requests and reloads validated rep
 Missing/corrupt replacements keep the last valid in-memory model and set `reloadFailed`
 in readiness. If no model has ever loaded, inference returns 503 until one appears.
 No HTTP training/upload endpoint is exposed.
+
+## Model comparison
+
+```sh
+python compare.py
+python retrain.py --history data/raw/game-history.csv --compare
+```
+
+Compare majority and last-three-move frequency baselines with Decision Tree, Random
+Forest, Logistic Regression, KNN and Gaussian Naive Bayes. Three expanding chronological
+folds with a three-window gap select the highest mean accuracy within the training 80%.
+Ties prefer earlier, simpler candidates. Models that cannot fit a fold are reported as
+unavailable. The final holdout is excluded from selection and reported afterward with
+accuracy, confusion matrix and per-class metrics. Uniform random expected accuracy is 1/3.
+
+Comparison requires at least 64 windows. `compare.py` writes a report and does not promote
+a model. `retrain.py --compare` uses the same comparison to validate/archive/promote the
+selected candidate through the retraining workflow. All scores are specific to the supplied
+history; repeated comparison of a small reused holdout is not an independent experiment.

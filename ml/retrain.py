@@ -12,6 +12,7 @@ import uuid
 import joblib
 
 from src.dataset.dataset_generator import generate_dataset
+from src.comparison import compare_models
 from src.prediction import Predictor
 from src.training import DEFAULT_MODEL, ROOT, atomic_dump, train
 
@@ -53,7 +54,7 @@ def atomic_json(value, path):
         Path(temporary).unlink(missing_ok=True)
 
 
-def retrain(history, output=DEFAULT_MODEL, report=None):
+def retrain(history, output=DEFAULT_MODEL, report=None, compare=False):
     history, output = Path(history), Path(output)
     report = Path(report or ROOT / "reports/retraining.json")
     if len({history.resolve(), output.resolve(), report.resolve()}) != 3:
@@ -67,7 +68,11 @@ def retrain(history, output=DEFAULT_MODEL, report=None):
         dataset = workspace / "dataset.csv"
         generated = generate_dataset(raw, dataset)
         candidate = workspace / "candidate.joblib"
-        metadata = train(dataset, candidate)
+        comparison = compare_models(dataset, candidate) if compare else None
+        metadata = ({key: value for key, value in joblib.load(candidate).items() if key != "model"}
+                    if comparison else train(dataset, candidate))
+        if comparison:
+            metadata["comparison"] = comparison
         Predictor(candidate).predict(["ROCK", "PAPER", "SCISSORS"])
         artifact = joblib.load(candidate)
         artifact["historySha256"] = hashlib.sha256(snapshot).hexdigest()
@@ -95,9 +100,10 @@ def main():
     inputs.add_argument("--rollback", type=Path)
     parser.add_argument("--output", type=Path, default=DEFAULT_MODEL)
     parser.add_argument("--report", type=Path, default=ROOT / "reports/retraining.json")
+    parser.add_argument("--compare", action="store_true", help="Select a model with chronological cross-validation (64+ windows)")
     args = parser.parse_args()
     try:
-        result = rollback(args.rollback, args.output) if args.rollback else retrain(args.history, args.output, args.report)
+        result = rollback(args.rollback, args.output) if args.rollback else retrain(args.history, args.output, args.report, args.compare)
     except (ValueError, RuntimeError, OSError) as error:
         parser.exit(2, f"Retraining failed: {error}\n")
     print(json.dumps(result, indent=2))

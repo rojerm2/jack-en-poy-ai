@@ -68,3 +68,7 @@ Start the request and a cancellable 1.35-second reveal timer together. Publish t
 
 ## ADR-015: snapshot retraining and last-valid-model reload
 Freeze history for reproducibility, validate a candidate before promotion, archive the old artifact, and atomically replace the model. A file lock prevents overlapping CLI operations. Serve the last validated predictor if a replacement cannot load. Training and rollback remain local operations.
+
+
+## ADR-016: select models within training data
+Use three expanding chronological folds with a three-window gap inside the training 80%. Fix the selected model before evaluating the final holdout. Compare two baselines and five classifiers, with deterministic ties favoring simpler earlier candidates. Comparison alone writes a report; promotion requires the retraining workflow.

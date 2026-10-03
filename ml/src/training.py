@@ -69,19 +69,14 @@ def atomic_dump(artifact, path):
         Path(temporary).unlink(missing_ok=True)
 
 
-def train(dataset=DEFAULT_DATA, output=DEFAULT_MODEL):
-    dataset, output = Path(dataset), Path(output)
-    data = load_dataset(dataset)
-    training, holdout = chronological_split(data)
-    model = make_pipeline()
-    model.fit(training[FEATURES], training["nextMove"])
+def make_artifact(model, model_name, dataset, training, holdout):
     metrics = evaluate(model, holdout)
     created = datetime.now(timezone.utc).isoformat()
     artifact = {
         "schemaVersion": 1,
         "windowSize": WINDOW_SIZE,
         "moves": list(MOVES),
-        "modelName": "decision_tree",
+        "modelName": model_name,
         "modelVersion": created,
         "sklearnVersion": sklearn.__version__,
         "datasetSha256": hashlib.sha256(dataset.read_bytes()).hexdigest(),
@@ -89,6 +84,16 @@ def train(dataset=DEFAULT_DATA, output=DEFAULT_MODEL):
         "evaluation": metrics,
         "model": model,
     }
+    return artifact
+
+
+def train(dataset=DEFAULT_DATA, output=DEFAULT_MODEL):
+    dataset, output = Path(dataset), Path(output)
+    data = load_dataset(dataset)
+    training, holdout = chronological_split(data)
+    model = make_pipeline()
+    model.fit(training[FEATURES], training["nextMove"])
+    artifact = make_artifact(model, "decision_tree", dataset, training, holdout)
     atomic_dump(artifact, output)
     return {key: value for key, value in artifact.items() if key != "model"}
 
