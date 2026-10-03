@@ -8,7 +8,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.prediction import ModelUnavailable, Predictor
+from src.prediction import ModelUnavailable
+from src.model_manager import ModelManager
 from src.training import DEFAULT_MODEL
 
 Move = Literal["ROCK", "PAPER", "SCISSORS"]
@@ -34,25 +35,22 @@ def create_app(model_path=None):
 
     @asynccontextmanager
     async def lifespan(application):
-        application.state.predictor = None
-        try:
-            application.state.predictor = Predictor(path)
-        except ModelUnavailable:
-            logger.warning("Prediction model unavailable. Train locally before serving predictions.")
+        application.state.models = ModelManager(path)
+        application.state.models.get()
         yield
 
     application = FastAPI(title="Jack-En-Poy prediction service", version="0.5.1", lifespan=lifespan)
 
     @application.get("/health")
     def health():
-        predictor = application.state.predictor
+        predictor = application.state.models.get()
         if predictor is None:
             return JSONResponse(status_code=503, content={"status": "unavailable", "modelLoaded": False})
-        return {"status": "ready", "modelLoaded": True, "modelName": predictor.artifact["modelName"], "modelVersion": predictor.artifact["modelVersion"]}
+        return {"status": "ready", "modelLoaded": True, "reloadFailed": application.state.models.reload_failed, "modelName": predictor.artifact["modelName"], "modelVersion": predictor.artifact["modelVersion"]}
 
     @application.post("/predict", response_model=PredictionResponse)
     def predict(request: PredictionRequest):
-        predictor = application.state.predictor
+        predictor = application.state.models.get()
         if predictor is None:
             raise HTTPException(status_code=503, detail="Prediction model unavailable")
         try:

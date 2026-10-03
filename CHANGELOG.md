@@ -1,5 +1,14 @@
 # Changelog
 
+## 7.1 — Retraining workflow
+
+- Animated React game with keyboard/session controls and reveal gating.
+- Backend-owned three-move history, ML counter strategy, random fallback and session CSV metadata.
+- Frozen-history retraining, minimum-data validation, CLI lock, model archives and rollback.
+- Automatic validated model reload; failed replacements retain the last good model.
+
+Validation: 26 Python tests pass, including retrain/rollback/locking/reload and failed-promotion safety. Real retraining CLI verified on the 146-round legacy sample. Frontend: 8 tests/build/lint. Backend: 21 tests.
+
 ## 6.2 — Gameplay/UI polish
 
 - Full ML counter strategy with random fallback and server-owned history.

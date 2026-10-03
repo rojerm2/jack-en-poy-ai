@@ -1,7 +1,7 @@
 # Architecture
 
-React POST /api/game/play → Spring Boot GameService → HttpMovePredictor POST /predict → FastAPI/Predictor → local Joblib pipeline.
-GameService retains three completed moves per session and counters the prediction before recording the current move.
-Insufficient history, disabled ML, timeout, HTTP error or invalid output uses random play.
-CSV live history includes session ID, per-session round number and prediction metadata. Session state is in memory, bounded to 1000 LRU entries; requests serialize in this single-instance app.
-Python raw CSV → session-aware windows → chronological training/holdout → atomic Joblib model.
+React → Spring Boot session GameService → HTTP inference → FastAPI ModelManager/Predictor → Joblib pipeline.
+Computer selection occurs before current-move recording. Failures use random fallback.
+Raw live CSV → frozen snapshot → session windows → chronological training → validated candidate → archived old model → atomic promotion.
+ModelManager watches timestamp/size on requests, swaps validated immutable predictors, and retains the previous model when reload fails. Local CLI owns training and rollback; no training/upload HTTP endpoint.
+Game sessions are ephemeral, bounded to 1000, and serialize play operations.

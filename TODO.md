@@ -1,5 +1,5 @@
 # Remaining work
 
-Next: 7.1 — Retraining workflow
+Next: 7.2 — Model comparison
 
-Completed through 6.2 — Gameplay/UI polish.
+Completed through 7.1 — Retraining workflow.

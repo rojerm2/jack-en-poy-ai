@@ -24,8 +24,8 @@ def load_dataset(path):
     data = pd.read_csv(path)
     if list(data.columns) != COLUMNS or not data.isin(MOVES).all().all():
         raise ValueError(f"Dataset requires valid move columns: {COLUMNS}")
-    if len(data) < 12:
-        raise ValueError("At least 12 training windows are required")
+    if len(data) < 16:
+        raise ValueError("At least 16 training windows are required")
     return data
 
 

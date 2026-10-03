@@ -34,7 +34,7 @@ def test_chronological_holdout_has_window_gap(dataset):
 def test_invalid_and_insufficient_data(tmp_path):
     path = tmp_path / "bad.csv"
     pd.DataFrame([["ROCK"] * 4], columns=COLUMNS).to_csv(path, index=False)
-    with pytest.raises(ValueError, match="At least 12"):
+    with pytest.raises(ValueError, match="At least 16"):
         load_dataset(path)
     pd.DataFrame([["BAD"] * 4] * 20, columns=COLUMNS).to_csv(path, index=False)
     with pytest.raises(ValueError, match="valid move"):

@@ -38,3 +38,25 @@ python -m uvicorn service:app --host 127.0.0.1 --port 8001
 moves, oldest first. Invalid requests return 422; missing or incompatible models
 return 503. The current player move is forbidden in this contract.
 `MODEL_PATH` overrides the model file. The service is local by default.
+
+## Retraining and rollback
+
+```sh
+python retrain.py
+# Or use the legacy sample explicitly:
+python retrain.py --history data/raw/game-history.csv
+python retrain.py --rollback models/archive/<previous-model>.joblib
+```
+
+The workflow freezes a raw history snapshot, generates session-aware windows, trains
+and validates a candidate, archives the current model, and atomically replaces it.
+It requires at least 16 windows and two training classes. Insufficient/invalid data
+leaves the active model unchanged. Reports include source hashes, version, sample
+counts, evaluation and rollback archive. A model lock prevents overlapping CLI runs.
+After a crashed run, remove `models/player-move.lock` only after checking no training
+process is active. Start the workflow manually after collecting more complete rounds.
+
+The service checks the file timestamp/size on requests and reloads validated replacements.
+Missing/corrupt replacements keep the last valid in-memory model and set `reloadFailed`
+in readiness. If no model has ever loaded, inference returns 503 until one appears.
+No HTTP training/upload endpoint is exposed.

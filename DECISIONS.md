@@ -64,3 +64,7 @@ Use server history rather than client-provided history. Resolve inference before
 
 ## ADR-014: reveal only after animation and inference
 Start the request and a cancellable 1.35-second reveal timer together. Publish the response only after both finish; keep controls locked while either is pending. Render first-person hands with SVG so no raster assets are required, and honor reduced-motion settings.
+
+
+## ADR-015: snapshot retraining and last-valid-model reload
+Freeze history for reproducibility, validate a candidate before promotion, archive the old artifact, and atomically replace the model. A file lock prevents overlapping CLI operations. Serve the last validated predictor if a replacement cannot load. Training and rollback remain local operations.
