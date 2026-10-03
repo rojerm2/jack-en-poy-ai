@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.1 — Python prediction service
+
+- React game and Spring Boot CSV collection.
+- Session-aware dataset pipeline, chronological training and validated prediction CLI.
+- FastAPI POST /predict and GET /health with typed validation and unavailable-model responses.
+
+Validation: 21 Python tests pass, including service readiness, inference, validation, and absent model cases. Backend and frontend baseline checks passed.
+
 ## 4.2 — ML prediction module
 
 - Existing React game, Spring Boot API and CSV collection.

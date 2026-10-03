@@ -1,6 +1,6 @@
 # Architecture
 
-React UI → Spring Boot GameService → CSV history.
-Python dataset generation → categorical encoding/decision tree → local Joblib artifact.
-Source directories: web/jack-en-poy-ai, core/jack-en-poy-ai, ml.
-Java 21; React 19; Python 3.12.
+React → Spring Boot → CSV history.
+Python CSV → session-aware windows → encoder/decision tree → Joblib artifact.
+FastAPI loads the local artifact once at startup and serves POST /predict and GET /health.
+Spring Boot integration is next.

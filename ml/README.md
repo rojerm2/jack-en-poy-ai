@@ -26,3 +26,15 @@ Synthetic sequences appear only in tests.
 The result includes the predicted move, class probabilities, model name and version.
 Confidence is an uncalibrated classifier probability, not a promised success rate.
 Missing or incompatible artifacts require retraining.
+
+## HTTP service
+
+```sh
+python -m uvicorn service:app --host 127.0.0.1 --port 8001
+```
+
+`GET /health` returns readiness and model metadata. `POST /predict` accepts only
+`{"history":["ROCK","PAPER","SCISSORS"]}`. History has exactly three completed
+moves, oldest first. Invalid requests return 422; missing or incompatible models
+return 503. The current player move is forbidden in this contract.
+`MODEL_PATH` overrides the model file. The service is local by default.

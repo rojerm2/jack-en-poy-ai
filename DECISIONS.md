@@ -52,3 +52,7 @@ Python provides the best ecosystem for machine learning while allowing the Java 
 
 ## ADR-011: chronological evaluation and bundled preprocessing
 Keep the last 20% as a chronological holdout with a three-window gap. Fit the encoder and model together on training rows only. Serialize their pipeline and metadata atomically. Keep Java at the documented Java 21 baseline.
+
+
+## ADR-012: independent local prediction service
+Serve inference through FastAPI on loopback port 8001. Require exactly three completed moves and forbid extra fields. Missing models return 503 so the game can use random play. Model artifacts are loaded locally rather than accepted over HTTP.
