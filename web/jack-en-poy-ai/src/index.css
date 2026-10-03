@@ -1,1 +1,49 @@
 @import "tailwindcss";
+
+:root { font-family: 'Segoe UI', system-ui, sans-serif; color: #26334d; background: #f8f6f1; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid #4267d5; outline-offset: 5px; }
+button:disabled { cursor: wait; opacity: .55; }
+.game-shell { max-width: 880px; margin: auto; padding: 42px 28px 24px; }
+.game-header { text-align: center; margin-bottom: 28px; }
+.eyebrow { font-size: 10px; letter-spacing: .2em; font-weight: 700; color: #68748a; }
+.game-header h1 { font-size: clamp(36px, 7vw, 60px); font-weight: 800; margin: 10px 0; letter-spacing: -.055em; }
+.title-dash { font-weight: 400; color: #dd7258; }
+.game-header p { font-size: 14px; color: #68748a; }
+.scoreboard { display: flex; justify-content: center; gap: 40px; margin-bottom: 22px; }
+.scoreboard div { display: flex; align-items: center; gap: 16px; }
+.scoreboard span { font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+.scoreboard strong { font-size: 30px; font-variant-numeric: tabular-nums; }
+.score-player { color: #4267d5; }
+.score-computer { color: #bc573f; }
+.score-draw { color: #68748a; }
+.arena { height: 390px; position: relative; overflow: hidden; background: #e6eaf2; border: 1px solid #d9dfe9; border-radius: 26px; box-shadow: inset 0 0 0 14px #ecf0f6; }
+.arena::before { content: ''; position: absolute; width: 235px; height: 235px; border: 1px dashed #cad3e2; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.opponent-arm { position: absolute; width: 165px; top: -67px; left: 17%; transform: rotate(158deg); }
+.player-arm { position: absolute; width: 185px; bottom: -58px; right: 17%; transform: rotate(-22deg); }
+.hand { width: 100%; display: block; filter: drop-shadow(4px 8px 1px #26334d12); }
+.table-label { position: absolute; font-size: 9px; font-weight: 700; letter-spacing: .16em; color: #68748a; }
+.opponent-label { right: 25px; top: 24px; }
+.player-label { left: 25px; bottom: 24px; }
+.arena-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; text-align: center; }
+.arena-message h2 { font-size: 25px; font-weight: 750; margin: 8px 0; }
+.arena-message p { color: #68748a; font-size: 12px; }
+.arena-active .hand { animation: hand-bounce .45s ease-in-out 3; }
+@keyframes hand-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-22px) rotate(5deg); } }
+.chant { height: 45px; position: relative; font-size: 36px; font-weight: 800; color: #4267d5; }
+.chant span { position: absolute; inset: 0; opacity: 0; animation: chant-beat .45s steps(1) both; }
+.chant span:nth-child(2) { animation-delay: .45s; }
+.chant span:nth-child(3) { animation-delay: .9s; animation-name: chant-final; }
+@keyframes chant-beat { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes chant-final { 0%, 100% { opacity: 1; } }
+.move-controls { display: flex; justify-content: center; gap: 14px; margin-top: 23px; }
+.move-button { display: flex; align-items: center; justify-content: center; gap: 12px; flex: 1; max-width: 210px; min-height: 70px; border: 1px solid #d9dfe9; border-radius: 14px; background: white; font-size: 14px; font-weight: 650; color: #26334d; transition: border-color .15s, transform .15s; }
+.move-button:hover:enabled { transform: translateY(-3px); border-color: #4267d5; }
+.move-symbol { font-size: 29px; }
+.error-message { padding: 14px; color: #93391f; background: #fbece6; border-radius: 10px; font-size: 14px; text-align: center; }
+.game-footer { text-align: center; color: #68748a; font-size: 11px; line-height: 1.9; margin-top: 28px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (max-width: 520px) { .game-shell { padding: 25px 16px; } .scoreboard { gap: 20px; } .scoreboard div { gap: 8px; } .scoreboard strong { font-size: 25px; } .scoreboard span { font-size: 8px; } .arena { height: 355px; } .opponent-arm { left: 2%; width: 140px; } .player-arm { right: 2%; width: 155px; } .move-controls { gap: 8px; } .move-button { flex-direction: column; gap: 3px; font-size: 12px; } .arena-message h2 { font-size: 21px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .chant span { position: static; opacity: 1; margin: 0 4px; } }

@@ -1,16 +1,16 @@
 # Project context
 
 Jack-En-Poy AI is a React/TypeScript game, Spring Boot API, and Python move predictor.
-The current completed milestone is 5.2 — Spring Boot ML integration. Next: 6.1 — First-person Jack-En-Poy animation.
+The current completed milestone is 6.1 — First-person Jack-En-Poy animation. Next: 6.2 — Gameplay/UI polish.
 
 ## Current implementation
-- FastAPI predictor and chronological/session-aware training pipeline.
-- Server-owned session history, ML counter strategy, bounded inference timeout and random fallback.
-- Validated game requests, separate live CSV with prediction metadata and sequential round numbers.
-- Browser session ID propagation; storage errors do not advance completed history.
+- Chronological/session-aware ML pipeline, FastAPI service and backend counter strategy with fallback.
+- First-person SVG hands on a responsive game table; three-beat 1.35-second chant.
+- Input locking, abort cleanup, result/score reveal after animation and API completion.
+- Reduced-motion support and accessible round status.
 
 ## Validation
-20 Maven tests pass, covering history isolation/no current-move leakage, timeout/unavailable/invalid inference, CSV and HTTP validation. Frontend build/lint pass. Python suite: 21 passed.
+5 frontend timing/error/score tests pass; TypeScript production build and lint pass. Narrow-layout browser screenshot verified. Backend: 20 tests; Python: 21 tests.
 
 ## Working conventions
 - Canonical documentation lives at the repository root and is tracked by Git.

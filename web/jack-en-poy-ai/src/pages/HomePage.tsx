@@ -1,82 +1,59 @@
+import { useEffect, useRef, useState } from 'react';
 import ScoreBoard from '../components/ScoreBoard';
-import ResultCard from '../components/ResultCard';
+import RoundArena from '../components/RoundArena';
 import MoveButton from '../components/MoveButton';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import { playGame } from '../services/gameService';
-import { useState } from 'react';
-import type { GameResult, Move } from '../types/game';
+import { waitForReveal } from '../utils/roundAnimation';
+import type { GameRound, Move } from '../types/game';
 
 export default function HomePage() {
-    const [playerMove, setPlayerMove] = useState<Move | null>(null);
-    const [computerMove, setComputerMove] = useState<Move | null>(null);
-    const [result, setResult] = useState<GameResult | null>(null);
-    const [playerScore, setPlayerScore] = useState(0);
-    const [computerScore, setComputerScore] = useState(0);
-    const [draws, setDraws] = useState(0);
+    const [game, setGame] = useState<GameRound | null>(null);
+    const [score, setScore] = useState({ player: 0, computer: 0, draw: 0 });
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const activeRound = useRef<AbortController | null>(null);
+
+    useEffect(() => () => activeRound.current?.abort(), []);
 
     const handlePlay = async (move: Move) => {
+        if (activeRound.current) return;
+        const controller = new AbortController();
+        activeRound.current = controller;
         setLoading(true);
+        setGame(null);
+        setError('');
         try {
-            const response = await playGame(move);
-
-            const game = response.data;
-
-            setPlayerMove(game.playerMove);
-            setComputerMove(game.computerMove);
-            setResult(game.result);
-
-            switch (game.result) {
-                case 'PLAYER_WIN':
-                    setPlayerScore((score) => score + 1);
-                    break;
-
-                case 'COMPUTER_WIN':
-                    setComputerScore((score) => score + 1);
-                    break;
-
-                case 'DRAW':
-                    setDraws((score) => score + 1);
-                    break;
-            }
-        } catch (error) {
-            console.error(error);
-
-            alert('Unable to play the game.');
+            const [response] = await Promise.all([playGame(move, controller.signal), waitForReveal(controller.signal)]);
+            if (controller.signal.aborted) return;
+            setGame(response.data);
+            setScore(previous => ({
+                player: previous.player + Number(response.data.result === 'PLAYER_WIN'),
+                computer: previous.computer + Number(response.data.result === 'COMPUTER_WIN'),
+                draw: previous.draw + Number(response.data.result === 'DRAW'),
+            }));
+        } catch {
+            if (!controller.signal.aborted) setError('Unable to play this round. Check that the game API is running and try again.');
         } finally {
-            setLoading(false);
+            if (!controller.signal.aborted) {
+                setLoading(false);
+                activeRound.current = null;
+            }
+            controller.abort();
         }
     };
 
     return (
-        <main className="min-h-screen bg-gray-100">
-            <div className="mx-auto max-w-4xl p-8">
-                <Header />
-                <ScoreBoard player={playerScore} computer={computerScore} draw={draws} />
-                <ResultCard playerMove={playerMove} computerMove={computerMove} result={result} />
-                <div className="mt-8 flex justify-center gap-4">
-                    <MoveButton move="ROCK" onClick={handlePlay} disabled={loading} />
-                    <MoveButton move="PAPER" onClick={handlePlay} disabled={loading} />
-                    <MoveButton move="SCISSORS" onClick={handlePlay} disabled={loading} />
-                </div>
-                <Footer />
+        <main className="game-shell">
+            <Header />
+            <ScoreBoard {...score} />
+            <RoundArena active={loading} game={game} />
+            <div className="move-controls" aria-label="Choose your move">
+                {(['ROCK', 'PAPER', 'SCISSORS'] as Move[]).map(move => <MoveButton key={move} move={move} onClick={handlePlay} disabled={loading} />)}
             </div>
+            {error && <p className="error-message" role="alert">{error}</p>}
+            <Footer />
         </main>
     );
 }
-
-// import { useState } from "react";
-// import type { GameResult, Move } from "../types/game";
-
-// // const [playerMove, setPlayerMove] = useState<Move | null>(null);
-
-// // const [computerMove, setComputerMove] = useState<Move | null>(null);
-
-// // const [result, setResult] = useState<GameResult | null>(null);
-
-// // const [playerScore, setPlayerScore] = useState(0);
-
-// // const [computerScore, setComputerScore] = useState(0);
-
-// // const [draws, setDraws] = useState(0);

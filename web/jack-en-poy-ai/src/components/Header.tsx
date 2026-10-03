@@ -1,9 +1,3 @@
 export default function Header() {
-  return (
-    <header className="mb-10 text-center">
-      <h1 className="text-5xl font-bold">Rock Paper Scissors AI</h1>
-
-      <p className="mt-3 text-gray-600">Learn. Predict. Adapt.</p>
-    </header>
-  );
+    return <header className="game-header"><span className="eyebrow">A LITTLE GAME OF HUMAN HABITS</span><h1>Jack<span className="title-dash">—</span>En<span className="title-dash">—</span>Poy</h1><p>Rock, paper, scissors. Can you keep the computer guessing?</p></header>;
 }

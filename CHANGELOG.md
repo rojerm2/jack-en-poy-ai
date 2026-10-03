@@ -1,5 +1,14 @@
 # Changelog
 
+## 6.1 — First-person Jack-En-Poy animation
+
+- Chronological/session-aware ML pipeline, FastAPI service and backend counter strategy with fallback.
+- First-person SVG hands on a responsive game table; three-beat 1.35-second chant.
+- Input locking, abort cleanup, result/score reveal after animation and API completion.
+- Reduced-motion support and accessible round status.
+
+Validation: 5 frontend timing/error/score tests pass; TypeScript production build and lint pass. Narrow-layout browser screenshot verified. Backend: 20 tests; Python: 21 tests.
+
 ## 5.2 — Spring Boot ML integration
 
 - FastAPI predictor and chronological/session-aware training pipeline.

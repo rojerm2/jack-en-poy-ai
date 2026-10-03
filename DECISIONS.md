@@ -60,3 +60,7 @@ Serve inference through FastAPI on loopback port 8001. Require exactly three com
 
 ## ADR-013: backend-owned session history and bounded fallback
 Use server history rather than client-provided history. Resolve inference before persisting the current move. Limit inference to 600 ms and use random fallback. Serialize play operations to preserve round ordering and keep local live history separate from checked-in samples. Session state is ephemeral and limited to 1000 entries.
+
+
+## ADR-014: reveal only after animation and inference
+Start the request and a cancellable 1.35-second reveal timer together. Publish the response only after both finish; keep controls locked while either is pending. Render first-person hands with SVG so no raster assets are required, and honor reduced-motion settings.
