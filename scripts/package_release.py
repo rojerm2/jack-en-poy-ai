@@ -31,6 +31,9 @@ def main():
     demo = ROOT / "web/jack-en-poy-ai/dist-demo"
     model = ROOT / "ml/models/player-move.joblib"
     assert jar.is_file() and (demo / "index.html").is_file() and model.is_file(), "Build and train before packaging"
+    with zipfile.ZipFile(jar) as bundle:
+        assert bundle.read("META-INF/LICENSE") == (ROOT / "LICENSE").read_bytes(), "Backend license is missing or differs"
+    assert (demo / "THIRD_PARTY_NOTICES.txt").is_file(), "Frontend dependency notices are missing"
     OUTPUT.mkdir(exist_ok=True)
     shutil.copyfile(jar, OUTPUT / jar.name)
     archive(OUTPUT / f"jack-en-poy-browser-demo-{VERSION}.zip", [(demo, "."), (ROOT / "LICENSE", "LICENSE")])
