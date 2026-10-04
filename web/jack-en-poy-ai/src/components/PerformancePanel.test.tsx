@@ -22,7 +22,7 @@ it('renders observed rates and separate sample counts', () => {
 it('shows repetition rounds separately from model accuracy and random play', () => {
     render(<PerformancePanel analytics={{ ...empty, totalRounds: 4, randomRounds: 3, adaptiveRounds: 1, adaptiveWinRate: 1 }} />);
     expect(screen.getByText('Computer wins · repetition')).toBeInTheDocument();
-    expect(screen.getByText('1 rounds countering repeated moves')).toBeInTheDocument();
+    expect(screen.getByText('1 round countering repeated moves')).toBeInTheDocument();
     expect(screen.getByText('0 correct / 0 predictions')).toBeInTheDocument();
     expect(screen.getByText('3 random rounds')).toBeInTheDocument();
 });

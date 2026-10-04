@@ -3,7 +3,7 @@
 ## Supported layout
 
 The release supports one Docker Compose stack. The web container serves built files through Nginx
-and proxies `/api` to Java. Python is reachable only inside the private container network. Runtime
+and proxies `/api` to Java. Java and Python use a private internal network. The web container also joins a host-facing network for its published loopback port. Runtime
 containers use unprivileged users, read-only root filesystems, temporary filesystems and memory limits.
 The proxy limits request bodies to 4 KiB and API traffic to 5 requests/second/IP with a burst of 10.
 

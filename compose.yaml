@@ -18,7 +18,7 @@ services:
       - no-new-privileges:true
     cap_drop: [ALL]
     mem_limit: 128m
-    networks: [game]
+    networks: [game, entry]
 
   backend:
     build:
@@ -62,6 +62,7 @@ services:
     networks: [game]
 
 networks:
+  entry:
   game:
     internal: true
 volumes:

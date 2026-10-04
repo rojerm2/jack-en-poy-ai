@@ -24,16 +24,17 @@ def request(path, data=None):
     return urllib.request.urlopen(message, timeout=12)
 
 def wait_ready():
+    last_error = None
     deadline = time.monotonic() + 60
     while time.monotonic() < deadline:
         try:
             with request("/api/health") as response:
                 if response.status == 200:
                     return
-        except (urllib.error.URLError, TimeoutError):
-            pass
+        except (urllib.error.URLError, TimeoutError) as error:
+            last_error = error
         time.sleep(1)
-    raise RuntimeError("Backend did not become ready")
+    raise RuntimeError(f"Backend did not become reachable: {last_error}")
 
 def main():
     try:
@@ -56,6 +57,8 @@ def main():
             with request("/api/game/play", {"sessionId": session, "playerMove": "ROCK"}) as response:
                 game = json.load(response)["data"]
             assert game["round"] == round_number
+            if round_number <= 3:
+                assert game["prediction"]["strategy"] == "RANDOM"
             if round_number > 3:
                 assert game["prediction"]["strategy"] == "ADAPTIVE"
                 assert game["computerMove"] == "PAPER"

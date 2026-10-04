@@ -2,18 +2,34 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ['*']
     schedule:
       interval: monthly
   - package-ecosystem: npm
     directory: /web/jack-en-poy-ai
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ['*']
     schedule:
       interval: monthly
   - package-ecosystem: maven
     directory: /core/jack-en-poy-ai
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ['*']
     schedule:
       interval: monthly
   - package-ecosystem: pip
     directory: /ml
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ['*']
     schedule:
       interval: monthly
   - package-ecosystem: docker
@@ -21,5 +37,9 @@ updates:
       - /web/jack-en-poy-ai
       - /core/jack-en-poy-ai
       - /ml
+    open-pull-requests-limit: 1
+    groups:
+      dependencies:
+        patterns: ['*']
     schedule:
       interval: monthly
