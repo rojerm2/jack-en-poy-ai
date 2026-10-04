@@ -1,9 +1,9 @@
-FROM eclipse-temurin:21-jdk-jammy AS build
+FROM eclipse-temurin:22-jdk-jammy AS build
 WORKDIR /build
 COPY core/jack-en-poy-ai/ ./
 RUN chmod +x mvnw && ./mvnw --batch-mode -DskipTests package
 
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:22-jre-jammy
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --uid 10001 --create-home app \
