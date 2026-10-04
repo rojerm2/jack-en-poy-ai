@@ -1,0 +1,21 @@
+name: Bug report
+description: Report incorrect behavior or a failing setup.
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the release version and whether you used Docker, local development or the browser demo.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser, Docker/runtime versions and relevant logs. Remove secrets and personal data.

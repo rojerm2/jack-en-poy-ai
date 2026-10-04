@@ -1,74 +1,53 @@
 # Architecture
 
-```text
-React / TypeScript (Vite)
-  POST /api/game/play {playerMove, sessionId}
-           |
-Spring Boot GameController → GameService (serialized per-round orchestration)
-           |                |
-           |                └── in-memory session history + score/statistics
-           |
-HttpMovePredictor → POST /predict {history: last 3 completed moves}
-           |                     |
-           |                FastAPI → ModelManager → validated Predictor
-           |                                          |
-           |                                     Joblib pipeline
-           |                               one-hot encoder + selected classifier
-           |
-Override three identical completed moves (ADAPTIVE), then counter or random fallback
-           |
-WinnerEvaluator → CsvGameHistoryStore → append-only local live CSV
-           |
-Commit current move to session history and return result/analytics snapshot
-           |
-React waits for API + 1.35-second chant, then reveals result, scores and statistics
-```
+## Complete application
+
+React sends `{playerMove, sessionId}` to `/api/game/play`. Nginx serves built assets and proxies
+the same-origin API path. Java owns a bounded session cache, sends only the last three completed
+moves to FastAPI, counters the returned prediction and evaluates the round. It appends a CSV row
+before advancing session history/statistics. Storage failure returns 503 without advancing state.
+
+If available inference sees three identical previous moves, Java uses the repetition rule instead
+and records strategy ADAPTIVE. Mixed windows use ML. Warmup, disabled inference, timeout and invalid
+responses use RANDOM. Rule rounds have no classifier confidence or model identity.
+
+The browser starts the request and a cancellable 1.35-second reveal timer together. Controls stay
+locked until both finish. Scores come from the backend snapshot. Requests/timers abort on unmount;
+reduced-motion preferences remove hand motion without bypassing the reveal timing.
+
+## Browser demo
+
+A separate Vite build sets `VITE_DEMO_MODE=true`. `DemoGame` implements random play, repetition
+counters and local statistics without HTTP requests. A visible notice states that no trained model
+or saved gameplay is involved. New game resets the in-memory demo. GitHub Pages serves this build
+under the repository base path; it does not host Java or Python.
 
 ## Data and model lifecycle
 
-Legacy sample CSV is checked in. Live history is a separate ignored CSV. Each live row records
-session ID, per-session round number, UTC timestamp, moves, result, strategy, predicted move,
-confidence, model name/version and fallback reason. Dataset generation builds three-move windows
-within sessions in chronological target order; legacy rows form one sample session.
+Legacy sample CSV is checked in. Live gameplay is a separate ignored CSV with session ID, round,
+UTC timestamp, moves, result and strategy/prediction metadata. Dataset generation builds three-move
+windows within each session and preserves chronological target order.
 
-Training reserves the last 20% with a three-window gap for evaluation. Model comparison performs
-three expanding chronological folds only within the training portion, then evaluates the fixed
-selection on holdout. Preprocessing and model share one pipeline/artifact. Artifacts include
-schema, dependency/model version, source hash, sample counts and evaluation.
+Training reserves the last 20% with a three-window gap. Model selection uses three expanding folds
+within the training portion, then evaluates the fixed selection on holdout. Preprocessing and the
+classifier share one artifact with dependency version, source hash, sample counts and evaluation.
 
-Retraining freezes raw data, builds and validates a candidate, archives the previous model, and
-replaces it atomically under a local file lock. Rollback validates a local archive before replacing
-the active model. ModelManager checks file identity/timestamp/size on requests and swaps complete
-predictors under a lock. A failed reload retains the last good model; no loaded model means 503.
+Retraining freezes history, builds/validates a candidate, archives the previous model and replaces
+it atomically under a local lock. Rollback validates an archive before replacing the active model.
+The service checks file identity/time/size on requests and retains its last good predictor on failed
+reload. No loaded model means HTTP 503.
 
-## State and failure behavior
+## Deployment boundaries
 
-- The backend owns history; client requests cannot supply inference history.
-- Computer selection occurs before current-move persistence/history updates.
-- If ML is available and all three previous completed moves match, an explicit ADAPTIVE rule predicts
-  that repeated move. Mixed windows still use ML; disabled/unavailable inference remains random.
-- Adaptive round counts/win rates and CSV prediction accuracy are separate from ML accuracy/confidence.
-  The streak rule cannot see the current move and can be beaten when the player changes moves.
-- First three completed rounds, disabled inference, HTTP errors, timeouts and invalid responses use random play.
-- History I/O failure returns 503; no session history/statistics update occurs.
-- Session scores/statistics appear in play responses and a read-only GET endpoint.
-- CSV analytics report persistent observed rates, model versions and confidence buckets.
-- Session rates are null until their denominator is nonzero; warmup is excluded from prediction accuracy.
-- Browser controls lock during a round, requests/timers abort on unmount, and reduced-motion settings remove motion.
+Compose runs one Nginx, Java and Python container on a private network. Only Nginx is bound to the
+host, on loopback by default. Containers use non-root users, read-only roots and writable named
+volumes for history/models/reports. Health checks verify the web server, history storage and model
+readiness. Nginx applies body/rate limits and browser security headers. Java shuts down gracefully.
 
-## Runtime boundaries
+The backend has an LRU limit of 1000 ephemeral sessions and serializes play. CSV writes are safe
+within one process, not across independent backend instances. Restart/eviction loses session state;
+CSV volumes remain. A lost response may leave a recorded round; later responses resynchronize scores.
+There is no account system, shared database, automatic retraining scheduler or hosted backend.
 
-Java 21/Spring Boot 4.1, Node 24/React 19, Python 3.12/scikit-learn. One backend instance maintains
-an LRU limit of 1000 ephemeral sessions and serializes play. Restart/eviction loses session state.
-CSV writes are serialized in that instance, not across multiple backend processes. There is no
-shared database, authentication, automated scheduler, or public deployment. The global model
-uses three previous moves; it is not per-player online learning. A lost HTTP response can leave
-a recorded round, and future successful responses resynchronize scores.
-
-## Verification
-
-Unit/integration tests cover all game outcomes, request validation, history isolation/no current
-move leakage, inference fallback, CSV persistence, analytics, preprocessing, serialization,
-chronological selection, retraining/rollback/reload, animation ordering and UI recovery. The
-cross-process smoke script packages Java separately and starts isolated services/data. The
-GitHub Actions validation workflow repeats the Python, Java, frontend and smoke checks.
+CI validates application behavior, Docker readiness/fallback/history retention and release packaging.
+Pages publishing follows successful validation. Release downloads include checksums and licensing.

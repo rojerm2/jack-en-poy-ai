@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: npm
+    directory: /web/jack-en-poy-ai
+    schedule:
+      interval: monthly
+  - package-ecosystem: maven
+    directory: /core/jack-en-poy-ai
+    schedule:
+      interval: monthly
+  - package-ecosystem: pip
+    directory: /ml
+    schedule:
+      interval: monthly
+  - package-ecosystem: docker
+    directories:
+      - /web/jack-en-poy-ai
+      - /core/jack-en-poy-ai
+      - /ml
+    schedule:
+      interval: monthly

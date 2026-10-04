@@ -22,7 +22,7 @@ public class HttpMovePredictor implements MovePredictor {
                              @Value("${ml.service.enabled:true}") boolean enabled,
                              @Value("${ml.service.timeout-ms:600}") int timeout) {
         this.enabled = enabled;
-        var http = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(timeout)).build();
+        var http = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).connectTimeout(Duration.ofMillis(timeout)).build();
         var factory = new JdkClientHttpRequestFactory(http);
         factory.setReadTimeout(Duration.ofMillis(timeout));
         this.client = RestClient.builder().baseUrl(url).requestFactory(factory).build();

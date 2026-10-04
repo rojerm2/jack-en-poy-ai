@@ -39,7 +39,7 @@ def create_app(model_path=None):
         application.state.models.get()
         yield
 
-    application = FastAPI(title="Jack-En-Poy prediction service", version="1.0.0", lifespan=lifespan)
+    application = FastAPI(title="Jack-En-Poy prediction service", version="1.1.0", lifespan=lifespan)
 
     @application.get("/health")
     def health():

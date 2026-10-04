@@ -70,6 +70,10 @@ export default function HomePage() {
     return (
         <main className="game-shell">
             <Header />
+            {import.meta.env.VITE_DEMO_MODE === 'true' && <aside className="demo-notice" aria-label="Browser demo">
+                <strong>Browser demo</strong> · Random play and repetition counters run locally. No ML service or saved data.
+                <a href="https://github.com/rojerm2/jack-en-poy-ai#quick-start">Run the full game with Docker →</a>
+            </aside>}
             <div className="session-toolbar"><span>THIS SESSION</span><button onClick={handleNewGame} disabled={loading}>New game</button></div>
             <ScoreBoard {...score} />
             <RoundArena active={loading} game={game} />

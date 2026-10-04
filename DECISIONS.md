@@ -1,87 +1,43 @@
-## ADR-007
+# Design decisions
 
-Use a component-based React architecture with lifted state.
+## Completed history belongs to the backend
 
-Reason:
+Clients choose their own move but cannot supply inference history. Prediction happens before the
+current round is stored. This preserves ordering and prevents current-move leakage. Sessions are
+bounded and ephemeral; CSV persists events for training and analysis.
 
-Keep UI components focused on presentation while allowing HomePage to own the shared application state. This follows React best practices, improves component reusability, and simplifies future features such as gameplay history, AI statistics, and prediction confidence.
+## Keep inference separate from game orchestration
 
-## ADR-008
+FastAPI loads a local scikit-learn artifact and accepts exactly three moves. Java applies game
+rules and counters predictions. A 600 ms inference bound and random fallback keep rounds playable
+when the predictor is unavailable. There is no HTTP model-upload or retraining endpoint.
 
-Title:
-Separate Raw Gameplay History from Training Data
+## Evaluate chronologically
 
-Decision:
+Training fits preprocessing and classifiers together. A three-window gap separates the training
+80% from holdout. Three expanding folds within training choose among two baselines and five
+classifiers. Holdout results are reported after selection, not used to choose the model.
 
-Store raw gameplay events independently and generate machine learning datasets through a preprocessing pipeline.
+## Promote only validated artifacts
 
-Reason:
+Retraining uses a frozen history snapshot, validates a candidate, archives the previous model and
+atomically promotes the replacement under a local lock. Failed reloads retain the last good model.
+Rollback uses a validated archive. Joblib artifacts remain trusted local inputs.
 
-Raw event logs should never be modified directly. Feature engineering should be reproducible and allow multiple dataset versions to be generated from the same history.
+## Record repetition rules separately
 
----
+An offline model can repeat the same wrong prediction forever for an unchanged three-move window.
+When inference is available and all previous moves match, predict that repeated move and counter it.
+Record ADAPTIVE instead of ML, with separate counts and no fabricated classifier confidence.
+This assumes the streak continues and can be beaten by changing moves.
 
-## ADR-009
+## Gate results on both animation and API completion
 
-Title:
-Use Sliding Window Feature Engineering
+The 1.35-second chant and API request run together. Publish outcomes/scores only after both finish;
+keep controls locked and cancel pending work on unmount. SVG hands avoid external asset dependencies.
 
-Decision:
+## Ship a complete Docker stack and a distinct browser demo
 
-Generate supervised learning samples using a sliding window of the player's previous three moves.
-
-Reason:
-
-Sequential gameplay cannot be used directly for supervised learning. The sliding window transforms sequential history into fixed-length feature vectors suitable for classification algorithms.
-
----
-
-## ADR-010
-
-Title:
-Keep Machine Learning in a Separate Python Module
-
-Decision:
-
-Implement preprocessing, model training, and prediction inside the dedicated `ml/` project.
-
-Reason:
-
-Python provides the best ecosystem for machine learning while allowing the Java backend to remain focused on application orchestration. This separation mirrors common production architectures.
-
-
-## ADR-011: chronological evaluation and bundled preprocessing
-Keep the last 20% as a chronological holdout with a three-window gap. Fit the encoder and model together on training rows only. Serialize their pipeline and metadata atomically. Keep Java at the documented Java 21 baseline.
-
-
-## ADR-012: independent local prediction service
-Serve inference through FastAPI on loopback port 8001. Require exactly three completed moves and forbid extra fields. Missing models return 503 so the game can use random play. Model artifacts are loaded locally rather than accepted over HTTP.
-
-
-## ADR-013: backend-owned session history and bounded fallback
-Use server history rather than client-provided history. Resolve inference before persisting the current move. Limit inference to 600 ms and use random fallback. Serialize play operations to preserve round ordering and keep local live history separate from checked-in samples. Session state is ephemeral and limited to 1000 entries.
-
-
-## ADR-014: reveal only after animation and inference
-Start the request and a cancellable 1.35-second reveal timer together. Publish the response only after both finish; keep controls locked while either is pending. Render first-person hands with SVG so no raster assets are required, and honor reduced-motion settings.
-
-
-## ADR-015: snapshot retraining and last-valid-model reload
-Freeze history for reproducibility, validate a candidate before promotion, archive the old artifact, and atomically replace the model. A file lock prevents overlapping CLI operations. Serve the last validated predictor if a replacement cannot load. Training and rollback remain local operations.
-
-
-## ADR-016: select models within training data
-Use three expanding chronological folds with a three-window gap inside the training 80%. Fix the selected model before evaluating the final holdout. Compare two baselines and five classifiers, with deterministic ties favoring simpler earlier candidates. Comparison alone writes a report; promotion requires the retraining workflow.
-
-
-## ADR-017: distinguish prediction accuracy from game outcomes
-Keep warmup/fallback rounds outside prediction accuracy denominators. Expose observed win rates by strategy with sample counts and null rates for empty groups. Backend snapshots own scores; persist prediction/model metadata for offline analysis. Observational strategy rates are not a controlled comparison.
-
-
-## ADR-018: keep repeated-move adaptation separate from offline ML
-When inference is available, override it if the last three completed player moves are identical.
-Predict that repeated move and counter it without reading the current move. A fixed offline model
-can otherwise repeat the same wrong prediction forever. Record this heuristic as ADAPTIVE with no
-classifier confidence or model identity, and count its rounds separately from ML and random play.
-Mixed histories retain ML; warmup, disabled inference and service failures retain random fallback.
-This rule assumes repetition continues, so changing moves can beat it. It is not online model training.
+The full application needs Java/Python, so Docker packages all three services behind Nginx. Private
+networking and named volumes provide a repeatable local deployment. GitHub Pages hosts a frontend
+demo that makes no API calls and labels its simpler rules clearly. No hosted backend is required.

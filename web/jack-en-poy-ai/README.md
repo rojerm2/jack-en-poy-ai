@@ -24,3 +24,9 @@ set `VITE_API_URL` before building (see `.env.example`). Requests time out after
 Serve `/api` through the same origin in a production deployment, or configure CORS.
 
 Expand Session statistics after a round for prediction accuracy, computer win rates by strategy, sample counts, and your move distribution. Stats and scores come from the backend and remain hidden until reveal.
+
+## Standalone browser demo
+
+`npm run build:demo` writes `dist-demo/`, which plays locally without an API. The banner explains that model inference and saved history are unavailable. Set `VITE_BASE_PATH=/repository-name/` when building for a GitHub Pages project site.
+
+`npm run test:e2e` verifies the built demo in Chromium. Install the test browser first with `npx playwright install chromium`; GitHub Actions also checks a phone viewport and publishes screenshots.

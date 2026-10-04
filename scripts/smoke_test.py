@@ -65,7 +65,7 @@ def play(client, api, session, move):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--jar", type=Path, default=ROOT / "core/jack-en-poy-ai/target/jack-en-poy-ai-1.0.0.jar")
+    parser.add_argument("--jar", type=Path, default=ROOT / "core/jack-en-poy-ai/target/jack-en-poy-ai-1.1.0.jar")
     args = parser.parse_args()
     jar = args.jar.resolve()
     if not jar.is_file():

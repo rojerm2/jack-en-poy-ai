@@ -11,6 +11,7 @@ export default function ResultCard({ game }: Props) {
         <div><strong>{ml ? 'Playing your pattern' : repetition ? 'Countering repeated moves' : 'Random play'}</strong>
             <p>{ml ? `Predicted ${prediction.predictedMove?.toLowerCase()} · ${Math.round((prediction.confidence ?? 0) * 100)}% model confidence` :
                 repetition ? `Your last three moves were ${prediction.predictedMove?.toLowerCase()}. Expecting another ${prediction.predictedMove?.toLowerCase()}.` :
+                prediction?.fallbackReason === 'browser_demo' ? 'Random play in this browser demo.' :
                 !game || prediction?.fallbackReason === 'insufficient_history' ? 'Three completed moves give the model a starting point.' : 'Prediction is unavailable. The game keeps going.'}</p>
             {ml && <small>Classifier confidence is not a guaranteed win rate.</small>}
         </div>

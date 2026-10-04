@@ -5,26 +5,24 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.orcific</groupId>
     <artifactId>jack-en-poy-ai</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>Jack-En-Poy AI</name>
     <description>Rock-Paper-Scissors with historical move prediction and random fallback</description>
-    <url/>
+    <url>https://github.com/rojerm2/jack-en-poy-ai</url>
     <licenses>
-        <license/>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+        </license>
     </licenses>
-    <developers>
-        <developer/>
-    </developers>
     <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
+        <connection>scm:git:https://github.com/rojerm2/jack-en-poy-ai.git</connection>
+        <url>https://github.com/rojerm2/jack-en-poy-ai</url>
     </scm>
     <properties>
         <java.version>21</java.version>

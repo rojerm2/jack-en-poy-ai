@@ -1,192 +1,122 @@
 # Jack-En-Poy AI
 
-Rock-Paper-Scissors built with React, Spring Boot, and a scikit-learn prediction service.
-The computer uses your previous three completed moves to predict the next move and
-counters that prediction. When your last three completed moves are identical, a repetition
-rule overrides the offline model and counters that repeated move. It uses random play during
-warmup or when inference is unavailable.
+[![Validate](https://github.com/rojerm2/jack-en-poy-ai/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/rojerm2/jack-en-poy-ai/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Version **1.0.0**.
+A rock-paper-scissors game with a React interface, a Spring Boot API, and a Python prediction service.
+The computer predicts from your three previous completed moves and counters the prediction.
+Repeated moves use a separate repetition rule; warmup and unavailable inference use random play.
 
-## Features
+**[Try the browser demo](https://rojerm2.github.io/jack-en-poy-ai/)** · **[Releases](https://github.com/rojerm2/jack-en-poy-ai/releases)**
 
-- First-person SVG hands, a Jack-En-Poy chant, and results revealed after the animation.
-- Keyboard controls, session scores, recent rounds, and reduced-motion support.
-- Server-owned player history, repetition counters, bounded HTTP inference, and random fallback.
-- Session-aware CSV collection, reproducible datasets, model comparison and retraining.
-- Prediction accuracy, win rates by strategy, move distribution, and offline model/version reports.
+The browser demo runs entirely on your device. It includes animation, scores, keyboard controls,
+random play and repetition counters. It does not run the trained model, contact a backend, or save
+gameplay. Use Docker to try the complete application.
 
-## Repository
+## Quick start
 
-| Directory | Purpose |
-| --- | --- |
-| `web/jack-en-poy-ai` | React 19, TypeScript, Vite and Tailwind |
-| `core/jack-en-poy-ai` | Spring Boot REST API, Java 21 and Maven wrapper |
-| `ml` | Dataset, training, comparison, inference and analytics |
-| `scripts/smoke_test.py` | Real Java/Python integration with temporary ports and data |
+Install Docker Engine or Docker Desktop with Compose v2, then run:
 
-## Local setup
+```sh
+git clone https://github.com/rojerm2/jack-en-poy-ai.git
+cd jack-en-poy-ai
+docker compose up --build --detach --wait
+```
 
-Prerequisites: **JDK 21**, **Node 24**, and **Python 3.12** available on PATH. Maven is
-provided by the wrapper. Use three terminals. Commands below use PowerShell.
+Open **http://localhost:8088**. Choose a move or use **R / P / S**. Results and scores appear
+after the three-beat chant. **New game** resets the current session.
 
-### 1. Train and start Python
+```sh
+docker compose logs --follow
+docker compose stop
+```
+
+The first build downloads dependencies and trains the sample model. Java and Python run on a
+private container network; only the frontend is exposed, on loopback by default. Named volumes
+retain CSV history, models and reports across container replacement. Session scores and inference
+history remain in memory and reset when the backend restarts.
+
+See [deployment and operations](docs/deployment.md) for configuration, retraining, backups and updates.
+
+## Gameplay
+
+- First-person SVG hands and a timed Jack-En-Poy reveal.
+- Keyboard controls, reduced-motion support, session scores and recent rounds.
+- `ML`: counter the trained model's prediction from completed history.
+- `ADAPTIVE`: when the previous three moves are identical and inference is available, counter that move.
+- `RANDOM`: warmup, disabled inference, timeouts and prediction-service failures.
+- Separate sample counts and observed win rates for each strategy; no fabricated model confidence for rules.
+
+The repetition rule assumes a streak continues. Changing your next move can beat it. The current move
+is never sent to Python or used to choose the counter.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser[React] -->|same-origin /api| Web[Nginx]
+    Web --> API[Spring Boot]
+    API -->|previous three moves| ML[FastAPI + scikit-learn]
+    API --> CSV[(CSV history volume)]
+    ML --> Model[(Model volume)]
+```
+
+| Component | Stack | Directory |
+| --- | --- | --- |
+| Frontend | React 19, TypeScript, Vite, Tailwind | [web/jack-en-poy-ai](web/jack-en-poy-ai) |
+| Game API | Java 21, Spring Boot 4.1, Maven wrapper | [core/jack-en-poy-ai](core/jack-en-poy-ai) |
+| Prediction | Python 3.12, FastAPI, scikit-learn | [ml](ml) |
+
+See [architecture](ARCHITECTURE.md) and [design decisions](DECISIONS.md) for runtime behavior and model evaluation.
+
+## Local development
+
+Prerequisites: Java 21, Node 24 and Python 3.12. Use three terminals from the repository root.
 
 ```powershell
+# Prediction service
 cd ml
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
 .\.venv\Scripts\python.exe -m src.dataset.main
-.\.venv\Scripts\python.exe train.py
+.\.venv\Scripts\python.exe retrain.py --history data/raw/game-history.csv --compare
 .\.venv\Scripts\python.exe -m uvicorn service:app --host 127.0.0.1 --port 8001
 ```
 
-Training starts with the small checked-in legacy sample. The resulting artifact is local
-and ignored by Git. `GET http://127.0.0.1:8001/health` reports model readiness. The game
-also works without this service; all rounds then use random play.
-
-### 2. Start the game API
-
 ```powershell
+# Game API
 cd core/jack-en-poy-ai
 .\mvnw.cmd spring-boot:run
 ```
 
-### 3. Start the frontend
-
 ```powershell
+# Frontend
 cd web/jack-en-poy-ai
 npm ci
 npm run dev
 ```
 
-Open **http://127.0.0.1:5173**. Choose a move or press R/P/S. The first three rounds of
-each session are random. The fourth round can use inference. New game clears visible
-scores and starts a fresh session while retaining saved history.
+Open http://127.0.0.1:5173. On Linux/macOS use `python3`, `.venv/bin/python` and `./mvnw`.
+Press Ctrl+C in each terminal to stop the services. For a frontend-only preview, run
+`npm run build:demo` followed by `npm run preview -- --outDir dist-demo` in the frontend directory.
 
-On Linux/macOS use `python3 -m venv .venv`, `.venv/bin/python` and `./mvnw` in place of
-the Windows Python environment and wrapper commands. Other commands are the same.
+## Evaluation and limits
 
-## API contract
+The checked-in 146-round sample selects logistic regression through three chronological training
+folds. Its holdout accuracy is **42.31% on 26 rows**. The holdout is separated by a three-window gap
+and excluded from model selection. This small reused sample does not establish general improvement
+over random play. Confidence is uncalibrated; live strategy win rates are observational.
 
-`POST /api/game/play`
+The complete application is designed for one backend instance and anonymous local gameplay.
+It keeps up to 1000 sessions in memory and serializes rounds. Restart or eviction resets session
+state. There is no account system or request deduplication; a lost response may represent a saved
+round, with scores resynchronized on the next successful response. The model is global and does
+not retrain itself while you play. See [future work](TODO.md).
 
-```json
-{"playerMove":"ROCK","sessionId":"00000000-0000-4000-8000-000000000001"}
-```
+## Development and releases
 
-Omit sessionId to start a server-generated session and reuse the returned ID. The response
-wraps `success`, `message`, and `data`. Data includes moves, result, session ID, round number,
-prediction metadata, and an authoritative analytics/score snapshot. Strategy is `ML`, `ADAPTIVE`
-(three identical completed moves), or `RANDOM`. Adaptive rounds have a predicted move but no
-classifier confidence/model metadata; `adaptiveRounds` and `adaptiveWinRate` are separate from
-ML accuracy and random-play statistics. Invalid moves or sessions
-return 400. History-storage failure returns 503 and does not advance completed history.
+[Contributing](CONTRIBUTING.md) documents the test commands. CI checks Python, Java, normal/demo
+frontend builds, dependency consistency, real-service integration, and Docker deployment behavior.
+Release downloads include the packaged backend, browser demo, Python module and SHA-256 checksums.
 
-`GET /api/game/analytics?sessionId=<UUID>` reads session statistics without playing.
-`POST http://127.0.0.1:8001/predict` accepts only three completed moves:
-
-```json
-{"history":["ROCK","PAPER","SCISSORS"]}
-```
-
-The current move is never included in that request. Python returns a predicted move,
-probabilities, confidence and model version. Invalid requests return 422; an unavailable
-model returns 503. The backend handles inference errors through random fallback.
-
-## Configuration
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `ML_SERVICE_URL` | `http://127.0.0.1:8001` | Backend inference service |
-| `ML_ENABLED` | `true` | Set false for random play |
-| `ML_TIMEOUT_MS` | `600` | Backend inference timeout |
-| `GAME_HISTORY_PATH` | `../../ml/data/raw/live-history.csv` | Relative to the backend working directory |
-| `GAME_ALLOWED_ORIGINS` | localhost/127.0.0.1 on ports 5173 (dev) and 4173 (preview) | Explicit comma-separated CORS origins |
-| `MODEL_PATH` | `ml/models/player-move.joblib` | Resolved within the Python module by default |
-| `VITE_API_URL` | `/api` | Frontend API URL at build time |
-
-Vite dev and preview proxy `/api` to the local backend. A deployed frontend needs a same-origin
-`/api` proxy or an explicit build-time URL and CORS origin. Python uses loopback in these setup
-commands. There is no authentication or public-hosting configuration in this portfolio release.
-
-## Retraining and evaluation
-
-From `ml/`, using the environment's Python:
-
-```powershell
-.\.venv\Scripts\python.exe retrain.py
-.\.venv\Scripts\python.exe retrain.py --compare
-.\.venv\Scripts\python.exe compare.py
-.\.venv\Scripts\python.exe analytics.py
-.\.venv\Scripts\python.exe predict.py ROCK PAPER SCISSORS
-```
-
-Retraining reads a frozen live-history snapshot and requires at least 16 windows and two
-training classes. Comparison requires 64 windows. Short sessions contribute no windows until
-their fourth recorded move. Collect enough complete rounds before retraining. For a reproducible
-sample comparison, use `retrain.py --history data/raw/game-history.csv --compare`.
-
-The workflow validates a candidate, archives the active model and replaces it atomically.
-`retrain.py --rollback models/archive/<file>.joblib` restores a locally created archive.
-The running service loads validated replacements on requests and keeps its last valid model
-if a replacement fails. A local model lock prevents concurrent retraining operations.
-
-Comparison covers majority/frequency baselines, Decision Tree, Random Forest, Logistic
-Regression, KNN and Gaussian Naive Bayes. The last 20% forms a holdout with a three-window gap.
-Three chronological folds within training data select the model; the holdout is reported afterward.
-
-On the checked-in 146-round legacy sample, selection chose logistic regression, with **42.31%
-accuracy over 26 holdout rows**. Uniform random expected accuracy is 33.33%. This is a small,
-single-player reused sample, so it does not establish general improvement over random play.
-Classifier confidence is uncalibrated. The repetition rule is separate from the trained model;
-it assumes a streak continues and can be beaten by changing moves. It does not retrain the classifier
-during play, and is enabled only when ML inference is available. Live strategy win rates describe different rounds,
-not a controlled experiment. Reports in `ml/reports/` include denominators and model versions.
-
-## Validation
-
-```powershell
-# Frontend directory
-npm ci
-npm run typecheck
-npm test
-npm run lint
-npm run build
-npm audit --audit-level=high
-
-# Backend directory
-.\mvnw.cmd clean verify
-
-# Python directory
-.\.venv\Scripts\python.exe -m pip check
-.\.venv\Scripts\python.exe -m pytest
-
-# Repository root, after packaging the backend
-ml\.venv\Scripts\python.exe scripts/smoke_test.py
-```
-
-The smoke test starts the actual packaged Java application and Python service with isolated
-ports/model/history, verifies gameplay without Python, ML counters after warmup, fallback after
-service shutdown, authoritative scores, and persistent analytics, then stops its own processes.
-It never adds rows to the sample or live developer history. GitHub Actions runs the same validation
-on pushes and pull requests.
-
-## Limits and next work
-
-This is a single-instance local application. Up to 1000 sessions are kept in memory and play
-operations are serialized. Restart/eviction resets inference history and session statistics;
-recorded CSV history remains available. A lost HTTP response can represent a recorded round;
-the next successful response resynchronizes scores. Request deduplication and shared persistent
-sessions are future work. The model is global rather than personalized per player.
-
-Future work includes larger independent datasets, calibrated confidence, persistent session
-storage, request deduplication, drift monitoring and deployment/authentication appropriate to
-the intended hosting environment. See [TODO.md](TODO.md).
-
-## Documentation
-
-[AI_CONTEXT.md](AI_CONTEXT.md) describes current state. [ARCHITECTURE.md](ARCHITECTURE.md),
-[DECISIONS.md](DECISIONS.md), and [CHANGELOG.md](CHANGELOG.md) record design and milestones.
-Module READMEs contain additional commands. Root documents are canonical and tracked;
-the earlier ignored `internal_docs/` copies are local mirrors.
+[Changelog](CHANGELOG.md) · [Security](SECURITY.md) · [MIT license](LICENSE)

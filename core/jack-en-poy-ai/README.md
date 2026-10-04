@@ -32,3 +32,7 @@ When ML is available, three identical completed moves use an explicit repetition
 `ADAPTIVE`). This prevents a stale model from repeatedly choosing the same losing counter. Adaptive
 rounds have no model confidence and expose `adaptiveRounds`/`adaptiveWinRate` separately. Only prior
 completed history is used; mixed windows remain ML and disabled/unavailable inference remains random.
+
+`GET /api/health` returns 200 when history storage is writable, or 503 when storage cannot be prepared. It supports Docker readiness checks without exposing filesystem paths.
+
+For the complete container setup, see [deployment](../../docs/deployment.md).

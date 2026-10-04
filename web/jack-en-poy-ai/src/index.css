@@ -81,3 +81,8 @@ kbd { font-size: 10px; border: 1px solid #d9dfe9; border-radius: 3px; padding: 1
 .move-distribution meter { width: 100%; accent-color: #4267d5; }
 .performance-panel p { color: #68748a; font-size: 10px; margin-top: 16px; line-height: 1.5; }
 @media (max-width: 520px) { .metric-grid { grid-template-columns: 1fr; } }
+
+
+.demo-notice { max-width: 52rem; margin: 0 auto 1.5rem; padding: 0.9rem 1rem; border: 1px solid #d8dce6; border-radius: 12px; background: #fff; color: #586176; font-size: 0.85rem; line-height: 1.6; }
+.demo-notice strong { color: #26334d; }
+.demo-notice a { display: block; color: #4267d5; text-decoration: underline; text-underline-offset: 3px; }

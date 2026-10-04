@@ -14,3 +14,10 @@ ml/reports/
 ml/data/raw/live-history.csv
 ml/data/processed/*.csv
 !ml/data/processed/training-data.csv
+
+release/
+**/dist-demo/
+
+backups/
+**/test-results/
+**/playwright-report/
