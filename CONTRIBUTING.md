@@ -50,3 +50,12 @@ for behavior changes; include the relevant verification results in the pull requ
 
 Contributions are licensed under the repository's MIT license. Report vulnerabilities as described
 in SECURITY.md rather than posting exploit details in a public issue.
+
+## Dependency maintenance
+Dependabot groups routine updates monthly with one open request per ecosystem. npm and Docker
+major-version upgrades require a deliberate migration; Python Docker updates stay on 3.12.
+Keep Node types on Node 24 and TypeScript on the version supported by typescript-eslint.
+Pydantic pins its core package exactly, so refresh both lock entries together after dependency
+resolution instead of accepting an independent pydantic-core update. All updates must pass the
+application, browser and container checks before merging. Historical failed runs remain in Actions
+even after a later successful run fixes the branch.

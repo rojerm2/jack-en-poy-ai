@@ -37,3 +37,12 @@ Docker CI builds all three images, checks private service ports and proxy header
 warmup/repetition/failure fallback, and checks CSV retention and proxy recovery after a backend restart.
 GitHub Pages publishes only after successful validation. Release bundles include licenses and a
 SHA-256 manifest; the backend embeds the repository license in META-INF.
+
+## Dependency maintenance
+Dependabot groups routine updates monthly with one open request per ecosystem. npm and Docker
+major-version upgrades require a deliberate migration; Python Docker updates stay on 3.12.
+Keep Node types on Node 24 and TypeScript on the version supported by typescript-eslint.
+Pydantic pins its core package exactly, so refresh both lock entries together after dependency
+resolution instead of accepting an independent pydantic-core update. All updates must pass the
+application, browser and container checks before merging. Historical failed runs remain in Actions
+even after a later successful run fixes the branch.

@@ -10,6 +10,13 @@ updates:
       interval: monthly
   - package-ecosystem: npm
     directory: /web/jack-en-poy-ai
+    # Compiler and runtime major upgrades require a separate migration.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+      # The current linter supports TypeScript below 6.1.
+      - dependency-name: typescript
+        versions: ['>=6.1']
     open-pull-requests-limit: 1
     groups:
       dependencies:
@@ -26,6 +33,9 @@ updates:
       interval: monthly
   - package-ecosystem: pip
     directory: /ml
+    # Pydantic requires an exact core version; refresh their lock pins together.
+    ignore:
+      - dependency-name: pydantic-core
     open-pull-requests-limit: 1
     groups:
       dependencies:
@@ -33,6 +43,12 @@ updates:
     schedule:
       interval: monthly
   - package-ecosystem: docker
+    # Match the Java 21 / Node 24 / Python 3.12 versions tested by CI.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: python
+        update-types: ['version-update:semver-minor']
     directories:
       - /web/jack-en-poy-ai
       - /core/jack-en-poy-ai

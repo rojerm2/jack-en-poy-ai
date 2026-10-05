@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Updated compatible frontend packages while retaining TypeScript 6 and Node 24 types.
+- Updated the Maven wrapper to 3.10.0.
+- Constrained Dependabot runtime/compiler migrations and independent Pydantic-core updates.
+
 ## 1.1.0 — 2026-10-04
 
 ### Added
