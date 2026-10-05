@@ -19,8 +19,8 @@ test('demo plays, counters repeated moves, and resets without an API', async ({ 
     await expect(page.getByTestId('computer-score')).toHaveText('1');
     await expect(page.getByTestId('draw-score')).toHaveText('3');
     await page.locator('summary').click();
-    await expect(page.getByText('1 rounds countering repeated moves', { exact: true })).toBeVisible();
-    await page.screenshot({ path: 'test-results/browser-demo.png', fullPage: true });
+    await expect(page.getByText('1 round countering repeated moves', { exact: true })).toBeVisible();
+    await page.screenshot({ path: 'test-results/browser-demo.png', fullPage: false });
     await page.getByRole('button', { name: 'New game' }).click();
     await expect(page.getByRole('heading', { name: 'Make your move.' })).toBeVisible();
     await expect(page.getByTestId('computer-score')).toHaveText('0');

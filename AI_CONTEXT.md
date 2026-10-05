@@ -28,3 +28,12 @@ reused sample does not establish general improvement over random play. Confidenc
 - Keep live history, artifacts, environments and build outputs out of Git.
 - Validate logical changes, update current documentation and use ordinary non-destructive commits/pushes.
 - Root documentation is canonical. README/CONTRIBUTING/deployment docs describe public workflows.
+
+## Release verification
+Application validation covers 35 Python tests, 30 Java tests, 21 frontend tests and two Chromium
+browser tests. The browser checks include desktop/phone layouts, repetition counters, reset and
+absence of API requests. Real Java/Python integration verifies inference isolation and fallback.
+Docker CI builds all three images, checks private service ports and proxy headers, verifies random
+warmup/repetition/failure fallback, and checks CSV retention and proxy recovery after a backend restart.
+GitHub Pages publishes only after successful validation. Release bundles include licenses and a
+SHA-256 manifest; the backend embeds the repository license in META-INF.

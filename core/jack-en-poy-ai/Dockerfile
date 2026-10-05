@@ -1,6 +1,7 @@
 FROM eclipse-temurin:21-jdk-jammy AS build
-WORKDIR /build
+WORKDIR /build/core/jack-en-poy-ai
 COPY core/jack-en-poy-ai/ ./
+COPY LICENSE /build/LICENSE
 RUN chmod +x mvnw && ./mvnw --batch-mode -DskipTests package
 
 FROM eclipse-temurin:21-jre-jammy
@@ -9,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && useradd --uid 10001 --create-home app \
     && mkdir -p /app /data/history && chown -R app:app /app /data
 WORKDIR /app
-COPY --from=build /build/target/jack-en-poy-ai-1.1.0.jar app.jar
+COPY --from=build /build/core/jack-en-poy-ai/target/jack-en-poy-ai-1.1.0.jar app.jar
 COPY LICENSE /app/LICENSE
 USER 10001:10001
 ENV GAME_HISTORY_PATH=/data/history/live-history.csv

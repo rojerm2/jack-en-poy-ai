@@ -13,6 +13,8 @@ The browser demo runs entirely on your device. It includes animation, scores, ke
 random play and repetition counters. It does not run the trained model, contact a backend, or save
 gameplay. Use Docker to try the complete application.
 
+![Browser demo showing a paper counter after repeated rock](docs/images/browser-demo.png)
+
 ## Quick start
 
 Install Docker Engine or Docker Desktop with Compose v2, then run:
@@ -116,7 +118,8 @@ not retrain itself while you play. See [future work](TODO.md).
 ## Development and releases
 
 [Contributing](CONTRIBUTING.md) documents the test commands. CI checks Python, Java, normal/demo
-frontend builds, dependency consistency, real-service integration, and Docker deployment behavior.
+frontend builds, dependency consistency, Chromium gameplay on desktop/phone viewports, real-service
+integration, and Docker deployment behavior.
 Release downloads include the packaged backend, browser demo, Python module and SHA-256 checksums.
 
 [Changelog](CHANGELOG.md) · [Security](SECURITY.md) · [MIT license](LICENSE)
